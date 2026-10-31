@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tech Games Fest 2026 | Dayananda Sagar University</title>
+  <!-- Official Cashfree Payments PG JS SDK v3 -->
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="assets/code-sanket.jpeg" type="image/jpeg">
+</head>
+<body>
+
+  <!-- Site Header (Clean Glass Navigation) -->
+  <header class="site-header">
+    <div class="header-inner">
+      <nav class="nav-links">
+        <button class="nav-link active" data-target="home">
+          <span>🏠</span> Home
+        </button>
+        <button class="nav-link" data-target="rules">
+          <span>📜</span> Games &amp; Rules
+        </button>
+        <button class="nav-link" data-target="register">
+          <span>✍️</span> Register Team
+        </button>
+      </nav>
+
+      <div style="display: flex; align-items: center; gap: 0.85rem;">
+        <div class="live-sync-indicator" title="Connected to server with zero-delay slot synchronization">
+          <span class="pulse-dot"></span>
+          <span>Live Slots Sync</span>
+        </div>
+        <button class="nav-cta-btn" data-target="register">
+          <span>Register Now</span> →
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="main-wrapper">
+
+    <!-- ==================== VIEW 1: HOME ==================== -->
+    <section id="view-home" class="page-view active">
+      
+      <!-- Bento Hero Banner -->
+      <div class="hero-container">
+        <div class="hero-bento">
+          <div class="hero-content">
+
+            <!-- CS Terminal Chrome Bar -->
+            <div class="terminal-bar" style="margin-bottom: 2rem; border-radius: 14px; background: rgba(6, 8, 14, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 25px rgba(0,0,0,0.6);">
+              <div class="terminal-dots">
+                <span class="dot-red"></span>
+                <span class="dot-yellow"></span>
+                <span class="dot-green"></span>
+              </div>
+              <div class="terminal-filename">
+                <span class="cs-code-prompt">&gt;_</span> root@codesanket:~/tech_games_fest_2026.sh &bull; [COMP_SCI_ARENA]
+              </div>
+              <div class="terminal-env-tag">
+                SOE: BLOCK A &bull; LH:2
+              </div>
+            </div>
+
+            <!-- Big Logos Showcase in Center -->
+            <div class="hero-big-logos-row">
+              <img src="assets/dsu-logo.png" alt="DSU Logo" class="hero-partner-logo">
+              
+              <div class="hero-center-club-box">
+                <img src="assets/code-sanket.jpeg" alt="Code Sanket Logo" class="hero-club-logo-big">
+                <span class="hero-club-subtext">&lt;code&gt;sanket; • Dept. CSE-AI &amp; DS Presents</span>
+              </div>
+
+              <img src="assets/soe-logo.png" alt="SOE Logo" class="hero-partner-logo">
+            </div>
+
+            <!-- Teaser & Main Title -->
+            <div>
+              <span class="hero-teaser"><span class="cs-code-prompt">&gt;_</span> ⚡ For the first time, tech gets playful! Come join the fun!</span>
+              <h1 class="hero-main-title">
+                TECH GAMES <span class="highlight-spark">FEST!</span>
+              </h1>
+              <div class="hero-tagline-motto">
+                <span class="motto-star">✦</span> Think
+                <span class="motto-star">•</span> Play
+                <span class="motto-star">•</span> Slay <span class="motto-star">✦</span>
+              </div>
+              <p class="hero-desc">
+                Find your two best buddies, form a powerhouse trio of 3, and conquer 7 electrifying arenas of code, intuition, Oxford-style debate, theatrical charades, and pure human invention!
+              </p>
+            </div>
+
+            <!-- Highlighted Call-to-Action Banner Above the 4 Cards -->
+            <div class="hero-alert-banner">
+              <span style="font-size: 1.35rem;">🔥</span>
+              <span><strong>Register your team now and don't miss out on the games!</strong> Limited slots available per event — secure your spots before they fill up!</span>
+            </div>
+
+            <!-- Key Info Metadata Pills (Centered) -->
+            <div class="hero-meta-grid">
+              <div class="meta-pill-card">
+                <div class="meta-icon-box" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B;">📅</div>
+                <div>
+                  <div class="meta-info-title">Dates</div>
+                  <div class="meta-info-val">16th – 17th Nov 2026</div>
+                </div>
+              </div>
+
+              <div class="meta-pill-card">
+                <div class="meta-icon-box" style="background: rgba(6, 182, 212, 0.15); color: #06B6D4;">⏰</div>
+                <div>
+                  <div class="meta-info-title">Event Timings</div>
+                  <div class="meta-info-val">8:45 AM – 4:00 PM</div>
+                </div>
+              </div>
+
+              <div class="meta-pill-card">
+                <div class="meta-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #10B981;">📍</div>
+                <div>
+                  <div class="meta-info-title">Campus Venue</div>
+                  <div class="meta-info-val">SOE: BLOCK A, LH:2</div>
+                </div>
+              </div>
+
+              <div class="meta-pill-card">
+                <div class="meta-icon-box" style="background: rgba(139, 92, 246, 0.15); color: #8B5CF6;">👥</div>
+                <div>
+                  <div class="meta-info-title">Team Structure</div>
+                  <div class="meta-info-val">3 Members Compulsory</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="hero-cta-group">
+              <button class="btn-primary" data-target="register">
+                <span>Register Your Team Now</span>
+                <span>→</span>
+              </button>
+              <button class="btn-secondary" data-target="rules">
+                <span>Explore 7 Games &amp; Rules</span>
+                <span>📋</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Slot Availability Tracker (Centered Dark Cards) -->
+      <div class="live-slots-overview">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Live Slot Availability</h2>
+            <p class="section-subtitle">Real-time team registration status across all 7 competitions. Updated instantaneously.</p>
+          </div>
+          <button class="btn-secondary" data-target="register" style="padding: 0.5rem 1.25rem; font-size: 0.88rem;">
+            Lock Your Slots →
+          </button>
+        </div>
+        
+        <div id="home-slots-grid" class="slots-grid">
+          <!-- Populated dynamically via JS & SSE -->
+        </div>
+      </div>
+
+      <!-- Snack Packs Feature Section (Centered Cards) -->
+      <div class="snack-packs-container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Snack Pack Selections</h2>
+            <p class="section-subtitle">Choose your refreshments package for both days. Every team member chooses their preference!</p>
+          </div>
+        </div>
+
+        <div class="snack-pack-cards-grid">
+          <!-- Pack 1 -->
+          <div class="snack-pack-card" style="border-top: 4px solid #10B981;">
+            <span class="snack-card-accent-badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.35);">
+              ₹135 <span style="font-size:0.75rem; font-weight:600;">/ person</span>
+            </span>
+            <h3 class="snack-card-title">Snack Pack 1</h3>
+            <p class="snack-card-subtitle">Refreshment Pack for Day 1 &amp; Day 2</p>
+            
+            <div class="snack-days-breakdown">
+              <div class="snack-day-item">
+                <span class="snack-day-badge">DAY 1</span>
+                <span class="snack-day-menu">Juice + Chips</span>
+              </div>
+              <div class="snack-day-item">
+                <span class="snack-day-badge">DAY 2</span>
+                <span class="snack-day-menu">Biscuit + Ice-Cream</span>
+              </div>
+            </div>
+
+            <p style="font-size:0.85rem; color: var(--text-muted); margin-top:1rem;">
+              ✓ Refreshment combo served across both festival days.
+            </p>
+          </div>
+
+          <!-- Pack 2 -->
+          <div class="snack-pack-card" style="border-top: 4px solid #F43F5E;">
+            <span class="snack-card-accent-badge" style="background: rgba(244, 63, 94, 0.15); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.35);">
+              ₹240 <span style="font-size:0.75rem; font-weight:600;">/ person</span>
+            </span>
+            <h3 class="snack-card-title">Snack Pack 2</h3>
+            <p class="snack-card-subtitle">Diet Coke Pack for Day 1 &amp; Day 2</p>
+            
+            <div class="snack-days-breakdown">
+              <div class="snack-day-item">
+                <span class="snack-day-badge" style="background: rgba(244, 63, 94, 0.25); color: #FDA4AF;">DAY 1</span>
+                <span class="snack-day-menu">Chips + Diet Coke</span>
+              </div>
+              <div class="snack-day-item">
+                <span class="snack-day-badge" style="background: rgba(244, 63, 94, 0.25); color: #FDA4AF;">DAY 2</span>
+                <span class="snack-day-menu">Ice-Cream + Diet Coke</span>
+              </div>
+            </div>
+
+            <p style="font-size:0.85rem; color: var(--text-muted); margin-top:1rem;">
+              ✓ Diet Coke combo served across both festival days.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coordinators & Conveners Section (Centered Cards) -->
+      <div class="coordinators-section">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Leadership &amp; Event Coordinators</h2>
+            <p class="section-subtitle">Reach out to our conveners, faculty mentors, and student leads for queries or assistance.</p>
+          </div>
+        </div>
+
+        <div class="coords-grid">
+          <!-- Conveners -->
+          <div class="coord-card">
+            <div class="coord-role-tag">Chief Convener</div>
+            <div class="coord-name">Dr. Udaya Kumar Reddy KR</div>
+            <p class="coord-sub">Dean, School of Engineering (SOE)</p>
+          </div>
+
+          <div class="coord-card">
+            <div class="coord-role-tag">Department Convener</div>
+            <div class="coord-name">Dr. Poongodi T</div>
+            <p class="coord-sub">Chairperson, Dept. of CSE(AI &amp; DS)</p>
+          </div>
+
+          <!-- Faculty Coordinator -->
+          <div class="coord-card">
+            <div class="coord-role-tag">Faculty Coordinator</div>
+            <div class="coord-name">Prof. Pavani Vittapalli</div>
+            <p class="coord-sub">Dept. of CSE - AI &amp; DS, SOE</p>
+          </div>
+
+          <!-- Student Coordinators -->
+          <div class="coord-card" style="border-left: 3px solid #6366F1;">
+            <div class="coord-role-tag" style="color: #A5B4FC; background: rgba(99, 102, 241, 0.15);">Lead Student Coordinator</div>
+            <div class="coord-name">Maduraa BS</div>
+            <a href="tel:8904418566" class="coord-phone-link">
+              <span>📞</span> +91 89044 18566
+            </a>
+          </div>
+
+          <div class="coord-card" style="border-left: 3px solid #6366F1;">
+            <div class="coord-role-tag" style="color: #A5B4FC; background: rgba(99, 102, 241, 0.15);">Student Coordinator</div>
+            <div class="coord-name">Jashwanth R</div>
+            <a href="tel:8310817516" class="coord-phone-link">
+              <span>📞</span> +91 83108 17516
+            </a>
+          </div>
+
+          <div class="coord-card" style="border-left: 3px solid #6366F1;">
+            <div class="coord-role-tag" style="color: #A5B4FC; background: rgba(99, 102, 241, 0.15);">Student Coordinator</div>
+            <div class="coord-name">Mayurika Das</div>
+            <a href="tel:7439761950" class="coord-phone-link">
+              <span>📞</span> +91 74397 61950
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== VIEW 2: RULES & SCHEDULE ==================== -->
+    <section id="view-rules" class="page-view">
+      <div class="rules-container">
+        
+        <div style="text-align: center; max-width: 780px; margin: 1rem auto 2.5rem auto;">
+          <span class="hero-teaser">Official Rulebook &amp; Timeline</span>
+          <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 0.65rem;">Game Guidelines &amp; Schedules</h2>
+          <p class="section-subtitle" style="font-size: 1.05rem;">
+            Chronological schedule and essential rules for participants across the 2-day fest.
+          </p>
+        </div>
+
+        <!-- Day Selector Pill Tabs -->
+        <div style="display: flex; justify-content: center; margin-bottom: 2rem;">
+          <div class="day-tabs-wrapper">
+            <button class="day-tab-btn active" data-day="1">
+              <span>🗓️ Day 1: 16th Nov 2026</span>
+            </button>
+            <button class="day-tab-btn" data-day="2">
+              <span>🗓️ Day 2: 17th Nov 2026</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Rules Cards Container (Rendered dynamically) -->
+        <div id="rules-cards-container">
+          <!-- Populated by renderRulesSection() -->
+        </div>
+
+        <!-- Call to Action Banner -->
+        <div style="background: var(--bg-card); border: 1.5px dashed var(--border-medium); border-radius: 20px; padding: 2.25rem; text-align: center; margin-top: 2.5rem; backdrop-filter: blur(18px);">
+          <h3 style="font-size: 1.45rem; margin-bottom: 0.5rem; color: #FFFFFF;">Ready to participate with your squad?</h3>
+          <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Each team of 3 can choose a minimum of 2 and maximum of 3 competitions.</p>
+          <button class="btn-primary" data-target="register">
+            Proceed to Registration →
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: REGISTRATION ==================== -->
+    <section id="view-register" class="page-view">
+      <div class="reg-container">
+
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <span class="hero-teaser">Team Registration Portal</span>
+          <h2 class="section-title" style="font-size: 2.4rem;">Register Your Trio</h2>
+          <p class="section-subtitle">Follow the simple 3-step registration. Slots are reserved instantly upon confirmation.</p>
+        </div>
+
+        <!-- Stepper Indicator -->
+        <div class="reg-stepper-bar">
+          <div class="step-item active" id="step-indicator-1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Competitions</div>
+          </div>
+          <div style="flex: 1; height: 2px; background: var(--border-medium); margin: 0 0.5rem;"></div>
+          <div class="step-item" id="step-indicator-2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Team &amp; Members</div>
+          </div>
+          <div style="flex: 1; height: 2px; background: var(--border-medium); margin: 0 0.5rem;"></div>
+          <div class="step-item" id="step-indicator-3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Review &amp; Pay</div>
+          </div>
+        </div>
+
+        <!-- STEP 1: Select Competitions -->
+        <div class="reg-step-card" id="reg-step-1">
+          <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem; color: #FFFFFF;">Step 1: Choose Your Competitions</h3>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            A team must participate in a <strong>minimum of 2</strong> and a <strong>maximum of 3</strong> events. Slots are tracked in real-time.
+          </p>
+
+          <div class="comp-select-instruction">
+            <p>Select 2 or 3 competitions below. Cards highlight when selected.</p>
+            <div id="selected-comp-counter" class="comp-counter-badge">
+              0 / 3 Selected (Min 2 required)
+            </div>
+          </div>
+
+          <div id="comp-selection-grid" class="comp-options-grid">
+            <!-- Populated dynamically with live slots -->
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+            <button class="btn-primary" id="btn-step1-next" disabled>
+              Next: Enter Team Details →
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Team Name & 3 Members Details -->
+        <div class="reg-step-card" id="reg-step-2" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <h3 style="font-size: 1.35rem; font-weight: 800; color: #FFFFFF;">Step 2: Team &amp; Member Information</h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted);">
+                All 3 team members are compulsory. Enter genuine USNs and university emails.
+              </p>
+            </div>
+            <div id="summary-selected-events">
+              <!-- Pill summary of chosen events -->
+            </div>
+          </div>
+
+          <!-- Team Name -->
+          <div class="form-group" style="max-width: 480px; margin-bottom: 2rem;">
+            <label class="form-label">Team Name <span class="req">*</span></label>
+            <input type="text" id="input-team-name" class="form-input" placeholder="e.g. AlgoRhythms, PixelPioneers" required>
+          </div>
+
+          <!-- 3 Members Bento Container -->
+          <div class="member-bento-grid">
+            
+            <!-- Member 1 -->
+            <div class="member-bento-card">
+              <span class="member-card-badge">Team Member 1 (Lead)</span>
+              
+              <div class="form-row-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Full Name <span class="req">*</span></label>
+                  <input type="text" id="m1-name" class="form-input" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">University USN <span class="req">*</span></label>
+                  <input type="text" id="m1-usn" class="form-input form-input-usn" placeholder="e.g. ENG24DS0018" maxlength="11" required>
+                  <div class="input-hint-row">
+                    <span>10–11 Alphanumeric Chars</span>
+                    <span>e.g. ENG24DS0018</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Semester <span class="req">*</span></label>
+                  <select id="m1-sem" class="form-select" required>
+                    <option value="">Select Semester</option>
+                    <option value="1st Sem">1st Semester</option>
+                    <option value="3rd Sem" selected>3rd Semester</option>
+                    <option value="5th Sem">5th Semester</option>
+                    <option value="7th Sem">7th Semester</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">WhatsApp Contact No. <span class="req">*</span></label>
+                  <input type="tel" id="m1-phone" class="form-input" placeholder="10-digit Mobile No." maxlength="10" inputmode="numeric" pattern="[0-9]{10}" required>
+                  <div class="input-hint-row">
+                    <span>Numbers only</span>
+                    <span>Exact 10 digits</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">University Email ID <span class="req">*</span></label>
+                <input type="email" id="m1-email" class="form-input" placeholder="username@dsu.edu.in" required>
+              </div>
+
+              <!-- Snack Selection for M1 -->
+              <div class="form-group">
+                <label class="form-label" style="display: flex; justify-content: space-between;">
+                  <span>Snack Pack Selection (2 Days) <span class="req">*</span></span>
+                  <span id="m1-price-display" style="color: #34D399; font-weight: 800;">₹135</span>
+                </label>
+                <div class="snack-radio-group">
+                  <label class="snack-radio-label selected">
+                    <div>
+                      <input type="radio" name="member-1-snack" value="pack1" checked>
+                      <strong style="color: #F8FAFC;">Pack 1 (₹135)</strong>
+                      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Juice + Chips (D1) | Biscuit + Ice-Cream (D2)</div>
+                    </div>
+                  </label>
+                  <label class="snack-radio-label">
+                    <div>
+                      <input type="radio" name="member-1-snack" value="pack2">
+                      <strong style="color: #F8FAFC;">Pack 2 (₹240)</strong>
+                      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Chips + Diet Coke (D1) | Ice-Cream + Diet Coke (D2)</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Member 2 -->
+            <div class="member-bento-card">
+              <span class="member-card-badge">Team Member 2</span>
+              
+              <div class="form-row-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Full Name <span class="req">*</span></label>
+                  <input type="text" id="m2-name" class="form-input" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">University USN <span class="req">*</span></label>
+                  <input type="text" id="m2-usn" class="form-input form-input-usn" placeholder="e.g. ENG24DS0018" maxlength="11" required>
+                  <div class="input-hint-row">
+                    <span>10–11 Alphanumeric Chars</span>
+                    <span>e.g. ENG24DS0018</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Semester <span class="req">*</span></label>
+                  <select id="m2-sem" class="form-select" required>
+                    <option value="">Select Semester</option>
+                    <option value="1st Sem">1st Semester</option>
+                    <option value="3rd Sem" selected>3rd Semester</option>
+                    <option value="5th Sem">5th Semester</option>
+                    <option value="7th Sem">7th Semester</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">WhatsApp Contact No. <span class="req">*</span></label>
+                  <input type="tel" id="m2-phone" class="form-input" placeholder="10-digit Mobile No." maxlength="10" inputmode="numeric" pattern="[0-9]{10}" required>
+                  <div class="input-hint-row">
+                    <span>Numbers only</span>
+                    <span>Exact 10 digits</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">University Email ID <span class="req">*</span></label>
+                <input type="email" id="m2-email" class="form-input" placeholder="username@dsu.edu.in" required>
+              </div>
+
+              <!-- Snack Selection for M2 -->
+              <div class="form-group">
+                <label class="form-label" style="display: flex; justify-content: space-between;">
+                  <span>Snack Pack Selection (2 Days) <span class="req">*</span></span>
+                  <span id="m2-price-display" style="color: #34D399; font-weight: 800;">₹135</span>
+                </label>
+                <div class="snack-radio-group">
+                  <label class="snack-radio-label selected">
+                    <div>
+                      <input type="radio" name="member-2-snack" value="pack1" checked>
+                      <strong style="color: #F8FAFC;">Pack 1 (₹135)</strong>
+                      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Juice + Chips (D1) | Biscuit + Ice-Cream (D2)</div>
+                    </div>
+                  </label>
+                  <label class="snack-radio-label">
+                    <div>
+                      <input type="radio" name="member-2-snack" value="pack2">
+                      <strong style="color: #F8FAFC;">Pack 2 (₹240)</strong>
+                      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Chips + Diet Coke (D1) | Ice-Cream + Diet Coke (D2)</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Member 3 -->
+            <div class="member-bento-card">
+              <span class="member-card-badge">Team Member 3</span>
+              
+              <div class="form-row-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Full Name <span class="req">*</span></label>
+                  <input type="text" id="m3-name" class="form-input" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">University USN <span class="req">*</span></label>
+                  <input type="text" id="m3-usn" class="form-input form-input-usn" placeholder="e.g. ENG24DS0018" maxlength="11" required>
+                  <div class="input-hint-row">
+                    <span>10–11 Alphanumeric Chars</span>
+                    <span>e.g. ENG24DS0018</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Semester <span class="req">*</span></label>
+                  <select id="m3-sem" class="form-select" required>
+                    <option value="">Select Semester</option>
+                    <option value="1st Sem">1st Semester</option>
+                    <option value="3rd Sem" selected>3rd Semester</option>
+                    <option value="5th Sem">5th Semester</option>
+                    <option value="7th Sem">7th Semester</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">WhatsApp Contact No. <span class="req">*</span></label>
+                  <input type="tel" id="m3-phone" class="form-input" placeholder="10-digit Mobile No." maxlength="10" inputmode="numeric" pattern="[0-9]{10}" required>
+                  <div class="input-hint-row">
+                    <span>Numbers only</span>
+                    <span>Exact 10 digits</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">University Email ID <span class="req">*</span></label>
+                <input type="email" id="m3-email" class="form-input" placeholder="username@dsu.edu.in" required>
+              </div>
+
+              <!-- Snack Selection for M3 -->
+              <div class="form-group">
+                <label class="form-label" style="display: flex; justify-content: space-between;">
+                  <span>Snack Pack Selection (2 Days) <span class="req">*</span></span>
+                  <span id="m3-price-display" style="color: #34D399; font-weight: 800;">₹135</span>
+                </label>
+                <div class="snack-radio-group">
+                  <label class="snack-radio-label selected">
+                    <div>
+                      <input type="radio" name="member-3-snack" value="pack1" checked>
+                      <strong style="color: #F8FAFC;">Pack 1 (₹135)</strong>
+                      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Juice + Chips (D1) | Biscuit + Ice-Cream (D2)</div>
+                    </div>
+                  </label>
+                  <label class="snack-radio-label">
+                    <div>
+                      <input type="radio" name="member-3-snack" value="pack2">
+                      <strong style="color: #F8FAFC;">Pack 2 (₹240)</strong>
+                      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Chips + Diet Coke (D1) | Ice-Cream + Diet Coke (D2)</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Total Calculation Card -->
+          <div class="pricing-summary-card">
+            <h4 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.85rem; color: #FFFFFF;">Registration &amp; Snack Package Summary</h4>
+            <div class="price-item-row">
+              <span>Event Entry Fee (Team of 3)</span>
+              <span style="font-weight: 700; color: #34D399;">FREE (Fest Registration)</span>
+            </div>
+            <div class="price-item-row">
+              <span>Snack Packs Fee (Calculated per individual choice)</span>
+              <span>Member 1 + Member 2 + Member 3</span>
+            </div>
+            <div class="price-item-row total-row">
+              <span>Total Payable Amount</span>
+              <span id="summary-total-price">₹405</span>
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
+            <button class="btn-secondary" id="btn-step2-back">
+              ← Back to Competitions
+            </button>
+            <button class="btn-primary" id="btn-step2-next">
+              Review Details &amp; Proceed →
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Review Details & Proceed to Cashfree Gateway -->
+        <div class="reg-step-card" id="reg-step-3" style="display: none;">
+          <h3 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem; color: #FFFFFF;">Step 3: Review &amp; Cashfree Payment Gateway</h3>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            Please double-check your registration details before initiating the authenticated payment session.
+          </p>
+
+          <div style="background: rgba(18, 22, 34, 0.85); border: 1px solid var(--border-light); border-radius: 18px; padding: 1.75rem; margin-bottom: 1.5rem; backdrop-filter: blur(16px);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em;">Team Name</span>
+                <h4 id="review-team-name" style="font-size: 1.45rem; font-weight: 800; color: #FFFFFF; margin-top: 0.2rem;">-</h4>
+              </div>
+              <span class="live-sync-indicator" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #34D399;">
+                <span class="pulse-dot"></span>
+                <span>Verified Format</span>
+              </span>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+              <strong style="font-size: 0.85rem; color: #F1F5F9; display: block; margin-bottom: 0.35rem;">Selected Competitions:</strong>
+              <ul id="review-events-list" style="padding-left: 1.25rem; font-size: 0.9rem; color: #CBD5E1; line-height: 1.6;">
+                <!-- list of selected events -->
+              </ul>
+            </div>
+
+            <div>
+              <strong style="font-size: 0.85rem; color: #F1F5F9; display: block; margin-bottom: 0.5rem;">Registered Members &amp; Snack Packs:</strong>
+              <div id="review-members-breakdown">
+                <!-- breakdown for members -->
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1.25rem; border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 1.25rem;">
+              <span style="font-size: 1.15rem; font-weight: 800; color: #FFFFFF;">Total Aggregate Fee:</span>
+              <span id="review-final-amount" style="font-size: 1.75rem; font-weight: 900; color: #34D399; font-family: 'Space Grotesk', sans-serif;">₹405</span>
+            </div>
+          </div>
+
+          <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.75rem; font-size: 0.85rem; color: #A5F3FC; line-height: 1.5;">
+            💳 <strong>Official Cashfree Gateway Integration:</strong> Clicking the button below generates an official Cashfree payment session. Once verified, your slots lock permanently and your digital pass is unlocked instantly.
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn-secondary" id="btn-step3-back">
+              ← Edit Details
+            </button>
+            <button class="btn-primary" id="btn-proceed-payment" style="box-shadow: 0 0 30px rgba(16, 185, 129, 0.45);">
+              Proceed to Cashfree Checkout 💳
+            </button>
+          </div>
+        </div>
+
+        <!-- SUCCESS SCREEN: Digital Confirmation Pass -->
+        <div class="reg-step-card" id="reg-success-card" style="display: none; border: 1.5px solid rgba(16, 185, 129, 0.45);">
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 70px; height: 70px; background: rgba(16, 185, 129, 0.15); border: 1.5px solid rgba(16, 185, 129, 0.4); color: #34D399; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 2.2rem; margin-bottom: 1rem; box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);">
+              ✓
+            </div>
+            <h3 style="font-size: 2.2rem; font-weight: 900; color: #FFFFFF; margin-bottom: 0.35rem;">Registration Confirmed!</h3>
+            <p style="font-size: 0.95rem; color: var(--text-muted);">Your team is officially registered for Tech Games Fest 2026. Slots have been updated live.</p>
+          </div>
+
+          <div class="pass-ticket-card">
+            <div class="pass-header">
+              <div>
+                <span style="font-size: 0.72rem; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">REGISTRATION PASS</span>
+                <div id="success-reg-id" class="pass-id-tag">TGF-2026-XXXX</div>
+              </div>
+              <div class="pass-status-verified" id="success-status-badge">
+                PAID &bull; Verified
+              </div>
+            </div>
+
+            <div class="pass-data-grid">
+              <div class="pass-data-item">
+                <label>Team Name</label>
+                <div id="success-team-name">-</div>
+              </div>
+              <div class="pass-data-item">
+                <label>Total Paid</label>
+                <div id="success-total-paid" style="color: #34D399;">₹0</div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+              <span style="font-size: 0.72rem; color: #64748B; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 0.35rem;">ENROLLED COMPETITIONS</span>
+              <div id="success-events-list" style="font-size: 0.95rem; font-weight: 700; color: #E2E8F0;">-</div>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+              <span style="font-size: 0.72rem; color: #64748B; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 0.35rem;">MEMBERS &amp; REFRESHMENT PASSES</span>
+              <ul id="success-members-list" style="font-size: 0.88rem; color: #CBD5E1; padding-left: 1.25rem; line-height: 1.6;"></ul>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 1rem; margin-top: 1rem; font-size: 0.82rem; color: #94A3B8;">
+              <span>Transaction Ref: <strong id="success-pay-id" style="color: #F8FAFC;">-</strong></span>
+              <span id="success-gateway-label" style="color: #38BDF8; font-weight: 700;">Cashfree Payments</span>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 1.25rem; flex-wrap: wrap;">
+            <button class="btn-primary" id="btn-print-pass">
+              🖨️ Print / Save Pass
+            </button>
+            <button class="btn-secondary" id="btn-register-another">
+              + Register Another Team
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== OFFICIAL CASHFREE PAYMENTS CHECKOUT MODAL & FALLBACK UTR ==================== -->
+  <div class="modal-overlay" id="cashfree-payment-modal">
+    <div class="cashfree-modal-box">
+      
+      <div class="cashfree-modal-header">
+        <div>
+          <span class="cf-secure-pill">🔒 Official Cashfree PG</span>
+          <h3 class="cf-modal-title">Tech Games Fest 2026</h3>
+        </div>
+        <button class="modal-close-btn" id="close-cashfree-modal">&times;</button>
+      </div>
+
+      <div class="cf-session-body">
+        <div class="cf-loader-orb" id="cf-loader-spinner"></div>
+        <h4 id="cf-modal-heading">Connecting to Cashfree Gateway...</h4>
+        <p id="cf-modal-sub">Official Cashfree checkout window opened. Please complete your UPI, card, or netbanking transaction securely.</p>
+        
+        <div style="margin: 1.25rem 0;">
+          <div class="cf-amount-badge">
+            <span>Total Payable:</span>
+            <strong id="cf-modal-amount">₹405</strong>
+          </div>
+        </div>
+
+        <div style="font-size: 0.78rem; color: #64748B; margin-bottom: 0.5rem;" id="cf-order-id-label">
+          Order Session: TGF_...
+        </div>
+      </div>
+
+      <!-- Fallback Manual UTR Safety Card (Requirement: Positioned directly below loading checkout screen) -->
+      <div class="utr-safety-card">
+        <div class="utr-safety-header">
+          <div class="utr-pulse-dot"></div>
+          <div>
+            <div class="utr-safety-title">SMS/Notification delayed?</div>
+            <div class="utr-safety-sub">
+              Please enter your 12-digit UPI UTR/Ref Number here to self-verify registration.
+            </div>
+          </div>
+        </div>
+
+        <div class="utr-input-wrapper">
+          <input 
+            type="text" 
+            id="input-fallback-utr" 
+            class="utr-field" 
+            placeholder="Enter 12-digit UPI UTR/Ref" 
+            maxlength="12"
+            pattern="[0-9]{12}"
+            inputmode="numeric"
+          >
+          <button id="btn-self-verify-utr" class="btn-verify-utr">
+            Verify UTR →
+          </button>
+        </div>
+
+        <div id="utr-feedback-msg" class="utr-status-feedback"></div>
+      </div>
+
+      <div class="cf-footer-note">
+        ⚡ 256-Bit Encrypted &bull; Instant Slot Lock &bull; Real-time Cryptographic Verification
+      </div>
+    </div>
+  </div>
+
+  <!-- Verified Compliance Footer Container -->
+  <footer class="site-footer compliance-footer">
+    <div class="compliance-footer-inner">
+
+      <!-- Column 1: Organization & Identity -->
+      <div class="footer-col-about">
+        <div class="footer-brand-title">
+          <span style="color:#00FF9D; font-family:'JetBrains Mono',monospace;">&gt;_</span>
+          <strong>Tech Games Fest 2026</strong>
+        </div>
+        <p class="footer-about-text">
+          Organized by <strong>&lt;code&gt;sanket;</strong> &bull; Department of Computer Science &amp; Engineering (Artificial Intelligence &amp; Data Science), School of Engineering (SOE), Dayananda Sagar University, Bengaluru.
+        </p>
+        <div class="footer-secure-tag">
+          <span class="pulse-dot"></span>
+          <span>Payments are securely processed via Cashfree Gateway using automated HTTPS verification layers.</span>
+        </div>
+      </div>
+
+      <!-- Column 2: Legal & Policy Directives -->
+      <div class="footer-col-links">
+        <h4 class="footer-col-heading">Compliance Policies</h4>
+        <ul class="footer-nav-list">
+          <li><a href="terms.html">📜 Terms &amp; Conditions</a></li>
+          <li><a href="refund.html">💳 Cancellation &amp; Refund Policy</a></li>
+          <li><a href="#rules" data-target="rules">🎯 Games &amp; Rulebook</a></li>
+          <li><a href="/admin">🔒 Organizer Command Center</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: Contact & Support -->
+      <div class="footer-col-contact">
+        <h4 class="footer-col-heading">Contact Us</h4>
+        <div class="footer-contact-item">
+          <span>📧 Support Email:</span>
+          <a href="mailto:codesanket-ai.ds@dsu.edu.in">codesanket-ai.ds@dsu.edu.in</a>
+        </div>
+        <div class="footer-contact-item">
+          <span>📞 Lead Coordinator:</span>
+          <a href="tel:8904418566">+91 89044 18566 (Maduraa BS)</a>
+        </div>
+        <div class="footer-contact-item">
+          <span>📞 Tech Support:</span>
+          <a href="tel:8310817516">+91 83108 17516 (Jashwanth R)</a>
+        </div>
+        <div class="footer-contact-item">
+          <span>📍 Fest Venue:</span>
+          <span style="color: #CBD5E1;">SOE Block A, LH:2, DSU Bengaluru</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div>&copy; 2026 &lt;code&gt;sanket; &bull; Dayananda Sagar University. All Rights Reserved.</div>
+      <div style="font-size:0.75rem; color:#64748B;">
+        Think &bull; Play &bull; Slay &bull; 16th &amp; 17th November 2026
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

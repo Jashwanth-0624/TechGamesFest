@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizer Command Center | Tech Games Fest 2026</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="assets/code-sanket.jpeg" type="image/jpeg">
+  <style>
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 1rem;
+    }
+    .admin-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+    .admin-stats-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .stat-metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(18px);
+      flex: 1 1 240px;
+      max-width: 340px;
+      transition: all 0.25s ease;
+    }
+    .stat-metric-card:hover {
+      border-color: rgba(6, 182, 212, 0.4);
+      transform: translateY(-2px);
+    }
+    .stat-metric-val {
+      font-size: 2.3rem;
+      font-weight: 900;
+      color: #FFFFFF;
+      font-family: 'Space Grotesk', sans-serif;
+      line-height: 1.1;
+      margin: 0.4rem 0;
+    }
+    .stat-metric-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .gateway-security-card {
+      background: linear-gradient(135deg, rgba(16, 20, 32, 0.95) 0%, rgba(8, 10, 16, 0.98) 100%);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      border-radius: 22px;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 2.5rem;
+    }
+    .admin-filter-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 18px;
+      padding: 1.1rem 1.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      backdrop-filter: blur(16px);
+    }
+    .admin-search-input {
+      min-width: 280px;
+      padding: 0.65rem 1.15rem;
+      font-size: 0.9rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-medium);
+      background: var(--bg-input);
+      color: #FFFFFF;
+      outline: none;
+    }
+    .admin-search-input:focus {
+      border-color: #06B6D4;
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
+    }
+    .admin-table-wrapper {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      overflow-x: auto;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 2.5rem;
+      backdrop-filter: blur(20px);
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+    .admin-table th {
+      background: rgba(14, 18, 28, 0.9);
+      padding: 1.1rem 1.25rem;
+      font-weight: 800;
+      color: #94A3B8;
+      border-bottom: 1px solid var(--border-light);
+      white-space: nowrap;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    .admin-table td {
+      padding: 1.1rem 1.25rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+      color: #E2E8F0;
+    }
+    .admin-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Minimal Header for Admin -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div style="display: flex; align-items: center; gap: 0.85rem;">
+        <span style="font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; color: #FFFFFF;">🔒 Organizer Command Center</span>
+        <span style="font-size: 0.75rem; background: rgba(6, 182, 212, 0.15); color: #38BDF8; padding: 2px 10px; border-radius: 9999px; font-weight: 800; border: 1px solid rgba(6, 182, 212, 0.35);">
+          Cashfree Live Engine
+        </span>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="live-sync-indicator">
+          <span class="pulse-dot"></span>
+          <span>Live SSE Synced</span>
+        </div>
+        <a href="/" class="btn-secondary" style="padding: 0.45rem 1rem; font-size: 0.85rem; text-decoration: none;">
+          ← View Public Fest Site
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+    <div class="admin-container">
+
+      <!-- Header row with Action Buttons -->
+      <div class="admin-header-row">
+        <div>
+          <span class="hero-teaser">Confidential • Coordinators &amp; Conveners</span>
+          <h1 class="section-title" style="font-size: 2.2rem;">Fest Registrations &amp; Live Rosters</h1>
+          <p class="section-subtitle">Real-time team verification, cryptographic Cashfree webhook logs, and automated slot allocations.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn-secondary" id="btn-export-all" style="font-size: 0.88rem; padding: 0.65rem 1.25rem;">
+            📥 Export All Teams (CSV)
+          </button>
+          <button class="btn-primary" id="btn-export-filtered" style="font-size: 0.88rem; padding: 0.65rem 1.25rem;">
+            📥 Export Filtered (CSV)
+          </button>
+        </div>
+      </div>
+
+      <!-- High-level Metric Cards (Centered) -->
+      <div class="admin-stats-grid">
+        <div class="stat-metric-card">
+          <div class="stat-metric-label">Confirmed Teams</div>
+          <div class="stat-metric-val" id="admin-total-teams">0</div>
+          <span style="font-size: 0.75rem; color: #34D399; background: rgba(16, 185, 129, 0.15); padding: 3px 8px; border-radius: 4px; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.3);">
+            Live Confirmed
+          </span>
+        </div>
+
+        <div class="stat-metric-card">
+          <div class="stat-metric-label">Total Registered Students</div>
+          <div class="stat-metric-val" id="admin-total-students">0</div>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">3 participants compulsory / team</span>
+        </div>
+
+        <div class="stat-metric-card">
+          <div class="stat-metric-label">Aggregate Revenue Collected</div>
+          <div class="stat-metric-val" id="admin-total-revenue" style="color: #34D399;">₹0</div>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Snack passes aggregate</span>
+        </div>
+      </div>
+
+      <!-- ==================== CASHFREE GATEWAY & WEBHOOK ENGINE STATUS ==================== -->
+      <div class="gateway-security-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #10B981, #06B6D4); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.2rem;">
+              ⚡
+            </div>
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: #FFFFFF;">Cashfree Payments Gateway &amp; Webhook Engine</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Cryptographic HMAC-SHA256 signature verification &bull; Zero manual admin button overrides required</p>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span style="font-size: 0.78rem; background: rgba(16, 185, 129, 0.15); color: #34D399; padding: 0.4rem 0.85rem; border-radius: 9999px; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.35);">
+              ✓ Fully Automated Webhook Engine: ACTIVE
+            </span>
+            <button id="btn-refresh-data" class="btn-secondary" style="font-size: 0.78rem; padding: 0.4rem 0.85rem;">
+              🔄 Refresh Roster
+            </button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; font-size: 0.82rem; color: var(--text-muted);">
+          <div style="background: rgba(18, 22, 34, 0.8); border: 1px solid var(--border-light); border-radius: 12px; padding: 0.85rem 1rem;">
+            <strong style="color: #F8FAFC; display: block; margin-bottom: 0.25rem;">Live Webhook Endpoint:</strong>
+            <code style="color: #38BDF8; font-family: 'JetBrains Mono', monospace;">/api/webhook/cashfree</code>
+          </div>
+          <div style="background: rgba(18, 22, 34, 0.8); border: 1px solid var(--border-light); border-radius: 12px; padding: 0.85rem 1rem;">
+            <strong style="color: #F8FAFC; display: block; margin-bottom: 0.25rem;">Cryptographic Security Layer:</strong>
+            <span style="color: #34D399;">HMAC-SHA256 (Timestamp + Raw Body)</span>
+          </div>
+          <div style="background: rgba(18, 22, 34, 0.8); border: 1px solid var(--border-light); border-radius: 12px; padding: 0.85rem 1rem;">
+            <strong style="color: #F8FAFC; display: block; margin-bottom: 0.25rem;">Slot Locking Mechanism:</strong>
+            <span style="color: #F1F5F9;">Immediate Atomic Database Lock on PAID</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Event Fill Monitor -->
+      <div style="margin-bottom: 2.5rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem; color: #FFFFFF;">Competition Capacities &amp; Remaining Slots (Live)</h3>
+        <div id="admin-slots-bars" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.25rem;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Filter & Search Controls -->
+      <div class="admin-filter-bar">
+        <div style="display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;">
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 800; color: #94A3B8; display: block; margin-bottom: 0.35rem; text-transform: uppercase;">FILTER BY COMPETITION</label>
+            <select id="admin-comp-filter" class="form-select" style="min-width: 260px; padding: 0.55rem 0.85rem; font-size: 0.88rem;">
+              <option value="all">All Competitions (Combined)</option>
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 800; color: #94A3B8; display: block; margin-bottom: 0.35rem; text-transform: uppercase;">SEARCH TEAM / USN / PHONE / NAME</label>
+            <input type="text" id="admin-search-input" class="admin-search-input" placeholder="Search team name, student, or USN...">
+          </div>
+        </div>
+
+        <div>
+          <span id="admin-filtered-count" style="font-size: 0.85rem; font-weight: 800; color: #38BDF8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.4rem 1rem; border-radius: var(--radius-pill);">
+            0 teams
+          </span>
+        </div>
+      </div>
+
+      <!-- Master Registrations Table -->
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Pass ID &amp; Time</th>
+              <th>Team Name</th>
+              <th>Competitions</th>
+              <th>Members (USN, Sem, Phone, Pack)</th>
+              <th>Amount Paid</th>
+              <th>Cashfree ID &amp; UTR</th>
+              <th>Verification Mode</th>
+            </tr>
+          </thead>
+          <tbody id="admin-table-body">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Verified Compliance Footer Container -->
+  <footer class="site-footer compliance-footer">
+    <div class="compliance-footer-inner">
+
+      <!-- Column 1: Organization & Identity -->
+      <div class="footer-col-about">
+        <div class="footer-brand-title">
+          <span style="color:#00FF9D; font-family:'JetBrains Mono',monospace;">&gt;_</span>
+          <strong>Tech Games Fest 2026 Dashboard</strong>
+        </div>
+        <p class="footer-about-text">
+          Organized by <strong>&lt;code&gt;sanket;</strong> &bull; Department of Computer Science &amp; Engineering (Artificial Intelligence &amp; Data Science), School of Engineering (SOE), Dayananda Sagar University, Bengaluru.
+        </p>
+        <div class="footer-secure-tag">
+          <span class="pulse-dot"></span>
+          <span>Payments are securely processed via Cashfree Gateway using automated HTTPS verification layers.</span>
+        </div>
+      </div>
+
+      <!-- Column 2: Legal & Policy Directives -->
+      <div class="footer-col-links">
+        <h4 class="footer-col-heading">Compliance Policies</h4>
+        <ul class="footer-nav-list">
+          <li><a href="terms.html">📜 Terms &amp; Conditions</a></li>
+          <li><a href="refund.html">💳 Cancellation &amp; Refund Policy</a></li>
+          <li><a href="/#rules">🎯 Public Rulebook</a></li>
+          <li><a href="/#register">✍️ Registration Portal</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: Contact & Support -->
+      <div class="footer-col-contact">
+        <h4 class="footer-col-heading">Contact &amp; Escalation</h4>
+        <div class="footer-contact-item">
+          <span>📧 Support Email:</span>
+          <a href="mailto:codesanket-ai.ds@dsu.edu.in">codesanket-ai.ds@dsu.edu.in</a>
+        </div>
+        <div class="footer-contact-item">
+          <span>📞 Lead Coordinator:</span>
+          <a href="tel:8904418566">+91 89044 18566 (Maduraa BS)</a>
+        </div>
+        <div class="footer-contact-item">
+          <span>📞 Tech Support:</span>
+          <a href="tel:8310817516">+91 83108 17516 (Jashwanth R)</a>
+        </div>
+        <div class="footer-contact-item">
+          <span>📍 Fest Venue:</span>
+          <span style="color: #CBD5E1;">SOE Block A, LH:2, DSU Bengaluru</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div>&copy; 2026 &lt;code&gt;sanket; &bull; Dayananda Sagar University. All Rights Reserved.</div>
+      <div style="font-size:0.75rem; color:#64748B;">
+        Think &bull; Play &bull; Slay &bull; 16th &amp; 17th November 2026
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const adminState = {
+      events: [],
+      registrations: [],
+      filter: 'all',
+      search: ''
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchAdminData();
+      initAdminSSE();
+      setupAdminListeners();
+    });
+
+    function initAdminSSE() {
+      if (!window.EventSource) return;
+      const evtSource = new EventSource('/api/events/stream');
+      
+      evtSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.events) {
+            adminState.events = data.events;
+            renderAdminSlotBars(data.events);
+          }
+          if (data.type === 'PAYMENT_CONFIRMED' || data.type === 'SLOTS_UPDATE') {
+            fetchAdminData();
+          }
+        } catch (err) {
+          console.error('SSE Error:', err);
+        }
+      };
+    }
+
+    async function fetchAdminData() {
+      try {
+        const res = await fetch('/api/admin/registrations');
+        const data = await res.json();
+        if (data.success) {
+          adminState.registrations = data.registrations || [];
+          adminState.events = data.events || [];
+
+          document.getElementById('admin-total-teams').innerText = data.totalTeams;
+          document.getElementById('admin-total-students').innerText = data.totalStudents;
+          document.getElementById('admin-total-revenue').innerText = `₹${data.totalRevenue.toLocaleString('en-IN')}`;
+
+          populateCompFilterOptions();
+          renderAdminSlotBars(adminState.events);
+          renderRegistrationsTable();
+        }
+      } catch (err) {
+        console.error('Failed to fetch admin data:', err);
+      }
+    }
+
+    function populateCompFilterOptions() {
+      const select = document.getElementById('admin-comp-filter');
+      if (!select || select.options.length > 1) return;
+
+      adminState.events.forEach(evt => {
+        const opt = document.createElement('option');
+        opt.value = evt.id;
+        opt.innerText = `${evt.name} (${evt.dayNumber === 1 ? 'Day 1' : 'Day 2'})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderAdminSlotBars(events) {
+      const container = document.getElementById('admin-slots-bars');
+      if (!container) return;
+
+      container.innerHTML = events.map(evt => {
+        const fillPercent = evt.fillPercentage || 0;
+        const isFull = evt.remainingSlots <= 0;
+
+        return `
+          <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 1.15rem 1.25rem; flex: 1 1 240px; max-width: 280px; min-width: 220px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+              <strong style="font-size: 0.92rem; color: #FFFFFF;">${evt.name}</strong>
+              <span style="font-size: 0.72rem; color: #38BDF8; background: rgba(56, 189, 248, 0.12); padding: 2px 6px; border-radius: 4px;">Day ${evt.dayNumber}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+              <span>Filled: ${evt.registeredCount}/${evt.totalSlots}</span>
+              <span style="color: ${isFull ? '#EF4444' : '#34D399'}; font-weight: 700;">${isFull ? 'FULL' : `${evt.remainingSlots} left`}</span>
+            </div>
+            <div style="height: 5px; background: rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden;">
+              <div style="width: ${fillPercent}%; height: 100%; background: ${isFull ? '#EF4444' : 'linear-gradient(90deg, #10B981, #06B6D4)'};"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderRegistrationsTable() {
+      const tbody = document.getElementById('admin-table-body');
+      const countEl = document.getElementById('admin-filtered-count');
+      if (!tbody) return;
+
+      const eventMap = {};
+      adminState.events.forEach(e => { eventMap[e.id] = e.name; });
+
+      const filtered = adminState.registrations.filter(r => {
+        const matchesComp = adminState.filter === 'all' || 
+          (Array.isArray(r.selectedCompetitions) && r.selectedCompetitions.includes(adminState.filter));
+
+        if (!matchesComp) return false;
+
+        if (!adminState.search) return true;
+        const q = adminState.search.toLowerCase();
+        
+        const inTeam = (r.teamName || '').toLowerCase().includes(q);
+        const inId = (r.id || '').toLowerCase().includes(q);
+        const inUtr = (r.utrNumber || '').toLowerCase().includes(q);
+        const inMembers = (r.members || []).some(m => 
+          (m.name || '').toLowerCase().includes(q) ||
+          (m.usn || '').toLowerCase().includes(q) ||
+          (m.phone || '').toLowerCase().includes(q)
+        );
+
+        return inTeam || inId || inUtr || inMembers;
+      });
+
+      if (countEl) countEl.innerText = `${filtered.length} teams`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+              No confirmed registrations found matching your query.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => {
+        const dateStr = new Date(r.registeredAt || r.createdAt).toLocaleString('en-IN', {
+          day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+        });
+
+        const compNames = (r.selectedCompetitions || []).map(cid => eventMap[cid] || cid).join(', ');
+
+        const membersList = (r.members || []).map((m, idx) => `
+          <div style="font-size: 0.8rem; margin-bottom: 0.35rem;">
+            <strong style="color: #FFFFFF;">M${idx + 1}: ${m.name}</strong> 
+            <span style="color: var(--text-muted); font-size: 0.75rem;">(${m.usn}, ${m.semester}, Ph: ${m.phone})</span> 
+            <span style="color: #34D399; font-weight: 700; font-size: 0.72rem;">[${m.snackPack === 'pack1' ? 'Pack 1' : 'Pack 2'}]</span>
+          </div>
+        `).join('');
+
+        return `
+          <tr>
+            <td>
+              <strong style="color: #38BDF8; font-family: 'Space Grotesk', sans-serif;">${r.id}</strong>
+              <div style="font-size: 0.72rem; color: var(--text-subtle); margin-top: 2px;">${dateStr}</div>
+            </td>
+            <td>
+              <strong style="color: #FFFFFF; font-size: 0.95rem;">${r.teamName}</strong>
+            </td>
+            <td style="max-width: 220px; font-size: 0.82rem; color: #E2E8F0;">
+              ${compNames}
+            </td>
+            <td>
+              ${membersList}
+            </td>
+            <td>
+              <strong style="color: #34D399; font-size: 1rem;">₹${r.totalAmount}</strong>
+            </td>
+            <td>
+              <div style="font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; color: #A5B4FC;">ID: ${r.paymentId || '-'}</div>
+              <div style="font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; color: #38BDF8; font-weight: 700;">UTR: ${r.utrNumber || '-'}</div>
+            </td>
+            <td>
+              <span style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); color: #34D399; padding: 3px 8px; border-radius: 9999px; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.35); display: inline-block;">
+                ${r.verifiedVia || 'Cashfree Webhook'}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function setupAdminListeners() {
+      const compFilter = document.getElementById('admin-comp-filter');
+      const searchInput = document.getElementById('admin-search-input');
+      const btnExportAll = document.getElementById('btn-export-all');
+      const btnExportFiltered = document.getElementById('btn-export-filtered');
+      const btnRefresh = document.getElementById('btn-refresh-data');
+
+      if (compFilter) {
+        compFilter.addEventListener('change', (e) => {
+          adminState.filter = e.target.value;
+          renderRegistrationsTable();
+        });
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          adminState.search = e.target.value.trim();
+          renderRegistrationsTable();
+        });
+      }
+
+      if (btnExportAll) {
+        btnExportAll.addEventListener('click', () => {
+          window.location.href = '/api/admin/export';
+        });
+      }
+
+      if (btnExportFiltered) {
+        btnExportFiltered.addEventListener('click', () => {
+          window.location.href = `/api/admin/export?compId=${adminState.filter}`;
+        });
+      }
+
+      if (btnRefresh) {
+        btnRefresh.addEventListener('click', () => {
+          fetchAdminData();
+        });
+      }
+    }
+  </script>
+</body>
+</html>

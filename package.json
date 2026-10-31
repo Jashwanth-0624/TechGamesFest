@@ -1,0 +1,29 @@
+{
+  "name": "tech-games-fest",
+  "version": "1.0.0",
+  "description": "Tech Games Fest 2026 Registration and Real-Time Slot Tracker for Dayananda Sagar University - SOE",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "fest",
+    "registration",
+    "dsu",
+    "tech-games-fest",
+    "code-sanket"
+  ],
+  "author": "Code Sanket - Dept. of CSE-AI & DS",
+  "license": "ISC",
+  "dependencies": {
+    "cashfree-pg": "^6.0.6",
+    "cors": "^2.8.5",
+    "dotenv": "^18.0.9",
+    "express": "^4.21.2",
+    "qrcode": "^1.5.4"
+  }
+}
