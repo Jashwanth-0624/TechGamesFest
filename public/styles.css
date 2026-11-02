@@ -2852,3 +2852,159 @@ h1, h2, h3, h4, .brand-font {
     font-size: 1.75rem;
   }
 }
+
+/* ==================== PRINTABLE RECEIPT STYLES ==================== */
+.print-receipt-header {
+  display: none;
+}
+
+@media print {
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: 12pt;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Hide entire web UI chrome during printing */
+  .site-header,
+  .site-footer,
+  .hero-container,
+  .page-view:not(#view-register),
+  .reg-stepper-bar,
+  #reg-step-1,
+  #reg-step-2,
+  #reg-step-3,
+  #reg-overcapacity-card,
+  #reg-cancelled-card,
+  #btn-print-pass,
+  #btn-register-another,
+  .bg-blob,
+  .modal-overlay,
+  .rules-day-nav {
+    display: none !important;
+  }
+
+  .main-wrapper {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .reg-container {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  #reg-success-card {
+    display: block !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  #reg-success-card > div:first-child {
+    display: none !important;
+  }
+
+  .print-receipt-header {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #000000;
+  }
+
+  .pass-ticket-card {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    color: #000000 !important;
+    page-break-inside: avoid;
+  }
+
+  .pass-header {
+    border-bottom: 1px solid #CCCCCC !important;
+    padding-bottom: 0.75rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .pass-id-tag {
+    color: #000000 !important;
+    font-size: 1.4rem !important;
+    font-weight: 900 !important;
+  }
+
+  .pass-status-verified {
+    border: 1.5px solid #059669 !important;
+    color: #059669 !important;
+    background: #F0FDF4 !important;
+    font-weight: 900 !important;
+  }
+
+  .pass-data-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1rem !important;
+    border-bottom: 1px solid #CCCCCC !important;
+    padding-bottom: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .pass-data-item label {
+    color: #555555 !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+  }
+
+  .pass-data-item div {
+    color: #000000 !important;
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+  }
+
+  #success-total-paid {
+    color: #000000 !important;
+  }
+
+  #success-events-list {
+    color: #000000 !important;
+    font-weight: 800 !important;
+    font-size: 1rem !important;
+  }
+
+  #success-members-list {
+    color: #222222 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+  }
+
+  #success-members-list li {
+    margin-bottom: 0.35rem !important;
+  }
+
+  #success-members-list strong {
+    color: #000000 !important;
+  }
+
+  .pass-ticket-card > div:last-child {
+    border-top: 1px solid #CCCCCC !important;
+    color: #333333 !important;
+    padding-top: 0.75rem !important;
+  }
+
+  #success-pay-id {
+    color: #000000 !important;
+  }
+
+  #success-gateway-label {
+    color: #333333 !important;
+  }
+}

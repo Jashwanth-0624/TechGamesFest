@@ -270,7 +270,7 @@
       <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
         <!-- Authenticated User Pill -->
         <span id="admin-user-pill" style="display: none; font-size: 0.78rem; background: rgba(16, 185, 129, 0.15); color: #34D399; padding: 4px 12px; border-radius: 9999px; border: 1px solid rgba(16, 185, 129, 0.35); font-weight: 800;">
-          🛡️ Convener: <strong id="admin-logged-user">v24j063012</strong>
+          🛡️ Convener: <strong id="admin-logged-user">Admin</strong>
         </span>
 
         <!-- Live SSE indicator -->
@@ -329,7 +329,7 @@
               <div class="login-input-group">
                 <label for="admin-username">Convener Username</label>
                 <div class="login-input-wrap">
-                  <input type="text" id="admin-username" class="login-input" placeholder="e.g. v24j063012" required autofocus spellcheck="false" autocomplete="username">
+                  <input type="text" id="admin-username" class="login-input" placeholder="Enter Convener ID / Username" required autofocus spellcheck="false" autocomplete="username">
                 </div>
               </div>
 
@@ -614,7 +614,7 @@
 
         if (data.success && data.authenticated) {
           adminState.token = savedToken;
-          adminState.username = data.username || savedUser || 'v24j063012';
+          adminState.username = data.username || savedUser || 'Convener';
           unlockDashboard();
         } else {
           sessionStorage.removeItem('tgf_admin_token');
@@ -639,7 +639,7 @@
       document.getElementById('admin-login-view').style.display = 'none';
       document.getElementById('admin-dashboard-view').style.display = 'block';
       document.getElementById('admin-user-pill').style.display = 'inline-block';
-      document.getElementById('admin-logged-user').innerText = adminState.username || 'v24j063012';
+      document.getElementById('admin-logged-user').innerText = adminState.username || 'Convener';
       document.getElementById('btn-admin-logout').style.display = 'inline-block';
       document.getElementById('admin-sse-pill').style.display = 'inline-flex';
 

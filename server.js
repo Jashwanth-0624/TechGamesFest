@@ -304,8 +304,16 @@ app.post('/api/register-team', async (req, res) => {
       }
     }
 
-    // Check slot availability atomically
+    // Check global and competition slot availability atomically
     const currentEvents = getEventsWithSlots();
+    const availableEvents = currentEvents.filter(e => e.remainingSlots > 0);
+    if (availableEvents.length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: 'Registrations are officially closed. All arena slots have reached maximum capacity.'
+      });
+    }
+
     const eventMap = {};
     currentEvents.forEach(e => { eventMap[e.id] = e; });
 
@@ -647,14 +655,28 @@ app.post('/api/verify-utr', async (req, res) => {
   }
 });
 
-// 6. Order Status Polling Endpoint (GET /api/order-status/:orderId)
-app.get('/api/order-status/:orderId', (req, res) => {
+// 6. Order Status Polling & Authoritative Verification Endpoint (GET /api/order-status/:orderId)
+app.get('/api/order-status/:orderId', async (req, res) => {
   const { orderId } = req.params;
   const registrations = readJSON(REGISTRATIONS_FILE, []);
-  const reg = registrations.find(r => r.orderId === orderId);
+  let reg = registrations.find(r => r.orderId === orderId);
+
+  if (!reg && activeOrders.has(orderId)) {
+    reg = activeOrders.get(orderId);
+  }
 
   if (!reg) {
     return res.status(404).json({ success: false, message: 'Order not found.' });
+  }
+
+  if (reg.paymentStatus === 'SUCCESS') {
+    return res.json({
+      success: true,
+      orderId: reg.orderId,
+      status: 'SUCCESS',
+      isPaid: true,
+      registration: reg
+    });
   }
 
   if (reg.paymentStatus === 'OVER_CAPACITY') {
@@ -667,6 +689,50 @@ app.get('/api/order-status/:orderId', (req, res) => {
       message: reg.overCapacityNotice || 'Slot capacity was filled by other teams before payment confirmation. Priority review active.',
       registration: reg
     });
+  }
+
+  // Active Server-to-Server Verification via Cashfree SDK
+  // Verifies directly with Cashfree's servers so green-screens or client overrides can never fake payment
+  if (cashfreeInstance && CASHFREE_APP_ID && CASHFREE_SECRET_KEY && !CASHFREE_APP_ID.startsWith('TEST_')) {
+    try {
+      const cfOrder = await cashfreeInstance.PGFetchOrder(orderId);
+      const cfStatus = cfOrder?.data?.order_status;
+
+      if (cfStatus === 'PAID') {
+        let utr = null;
+        let cfPayId = null;
+        try {
+          const paymentsRes = await cashfreeInstance.PGOrderFetchPayments(orderId);
+          const paymentsList = paymentsRes?.data || [];
+          const successPayment = paymentsList.find(p => p.payment_status === 'SUCCESS') || paymentsList[0];
+          if (successPayment) {
+            utr = successPayment.bank_reference || successPayment.payment_gateway_details?.utr;
+            cfPayId = successPayment.cf_payment_id;
+          }
+        } catch (pErr) {}
+
+        const confirmed = await confirmRegistrationSuccess(orderId, cfPayId, utr, 'Cashfree API Verification (Active Server Query)');
+        return res.json({
+          success: true,
+          orderId: confirmed?.orderId || orderId,
+          status: confirmed?.paymentStatus || 'SUCCESS',
+          isPaid: true,
+          overCapacity: confirmed?.paymentStatus === 'OVER_CAPACITY',
+          registration: confirmed
+        });
+      } else if (cfStatus === 'EXPIRED' || cfStatus === 'TERMINATED') {
+        reg.paymentStatus = 'CANCELLED';
+        writeJSON(REGISTRATIONS_FILE, registrations);
+        return res.json({
+          success: true,
+          orderId: reg.orderId,
+          status: 'CANCELLED',
+          isPaid: false
+        });
+      }
+    } catch (cfErr) {
+      // transient network or non-fatal SDK check
+    }
   }
 
   res.json({

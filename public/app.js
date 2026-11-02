@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchEvents();
   setupRegistrationForm();
   setupDayTabs();
-  setupCashfreeModalListeners();
+  checkReturnUrlForPayment();
 });
 
 // ==================== NAVIGATION HANDLING ====================
@@ -397,6 +397,38 @@ function renderCompSelector() {
 
   const countBadge = document.getElementById('selected-comp-counter');
   const count = state.selectedCompetitions.size;
+  const nextBtn = document.getElementById('btn-step1-next');
+  const openEvents = state.events.filter(e => e.remainingSlots > 0);
+
+  // Auto-close registrations if fewer than 2 competitions have open slots
+  if (state.events.length > 0 && openEvents.length < 2) {
+    if (countBadge) {
+      countBadge.innerText = 'All Arenas Sold Out';
+      countBadge.style.color = '#EF4444';
+      countBadge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+      countBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+    }
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(185, 28, 28, 0.15) 100%); border: 1.5px solid rgba(239, 68, 68, 0.45); border-radius: 20px; padding: 2.5rem 1.5rem; text-align: center;">
+        <div style="font-size: 2.8rem; margin-bottom: 0.75rem;">🛑</div>
+        <h3 style="color: #FFFFFF; font-size: 1.6rem; font-weight: 900; margin-bottom: 0.5rem;">Registrations Officially Closed</h3>
+        <p style="color: #FCA5A5; font-size: 0.95rem; max-width: 580px; margin: 0 auto 1.25rem auto; line-height: 1.6;">
+          All arena tournament competition slots have reached maximum capacity! Because teams are required to compete in a minimum of 2 tracks, no additional team registrations can be accepted.
+        </p>
+        <span style="font-size: 0.8rem; background: rgba(239, 68, 68, 0.2); color: #FCA5A5; padding: 4px 14px; border-radius: 9999px; font-weight: 800; border: 1px solid rgba(239, 68, 68, 0.4);">
+          100% Slot Occupancy Reached
+        </span>
+      </div>
+    `;
+    if (nextBtn) {
+      nextBtn.disabled = true;
+      nextBtn.style.opacity = '0.3';
+      nextBtn.style.cursor = 'not-allowed';
+      nextBtn.innerText = 'Registrations Closed (Sold Out)';
+    }
+    return;
+  }
+
   if (countBadge) {
     countBadge.innerText = `${count} / 3 Selected (Min 2 required)`;
     if (count >= 2 && count <= 3) {
@@ -466,7 +498,6 @@ function renderCompSelector() {
   });
 
   // Enable/disable proceed button
-  const nextBtn = document.getElementById('btn-step1-next');
   if (nextBtn) {
     const isValid = (count >= 2 && count <= 3);
     nextBtn.disabled = !isValid;
@@ -705,7 +736,7 @@ async function initiateCashfreeCheckout() {
   const btn = document.getElementById('btn-proceed-payment');
   if (btn) {
     btn.disabled = true;
-    btn.innerText = 'Creating Cashfree Session... ⏳';
+    btn.innerText = 'Connecting to Cashfree Gateway... 🔒';
   }
 
   const teamName = document.getElementById('input-team-name').value.trim();
@@ -733,7 +764,7 @@ async function initiateCashfreeCheckout() {
     const data = await res.json();
 
     if (!data.success) {
-      alert(`Registration Initiation Error: ${data.message || 'Please try again.'}`);
+      alert(`Registration Error: ${data.message || 'Please try again.'}`);
       if (btn) {
         btn.disabled = false;
         btn.innerText = 'Proceed to Cashfree Checkout 💳';
@@ -743,44 +774,27 @@ async function initiateCashfreeCheckout() {
 
     state.activeOrder = data;
 
-    // Open Modal
-    const modal = document.getElementById('cashfree-payment-modal');
-    modal.classList.add('active');
-
-    // Update modal details
-    document.getElementById('cf-modal-amount').innerText = `₹${data.order_amount}`;
-    document.getElementById('cf-order-id-label').innerText = `Session ID: ${data.order_id}`;
-    document.getElementById('cf-modal-heading').innerText = 'Cashfree Checkout Active';
-    document.getElementById('cf-modal-sub').innerText = 'Please complete your transaction via UPI, Cards, or Netbanking in the modal.';
-
-    // Clear fallback UTR field & feedback
-    const utrInput = document.getElementById('input-fallback-utr');
-    if (utrInput) utrInput.value = '';
-    const utrFeedback = document.getElementById('utr-feedback-msg');
-    if (utrFeedback) utrFeedback.innerHTML = '';
-
-    // Invoke Official Cashfree SDK
-    try {
-      if (window.Cashfree) {
-        const cfMode = data.cashfreeEnvironment === 'PRODUCTION' ? 'production' : 'sandbox';
-        const cashfree = window.Cashfree({ mode: cfMode });
-        
-        cashfree.checkout({
-          paymentSessionId: data.payment_session_id,
-          redirectTarget: "_modal"
-        }).then(result => {
-          console.log('[Cashfree Modal Action]:', result);
-          checkOrderStatusOnce(data.order_id);
-        });
-      } else {
-        console.warn('Cashfree SDK not loaded in browser; auto-polling observer enabled.');
-      }
-    } catch (cfErr) {
-      console.warn('Cashfree modal launch notice:', cfErr);
-    }
-
-    // Start Real-Time Order Status Polling (checks every 2 seconds for Webhook / UTR confirmation)
+    // Start Real-Time Order Status Polling in background
     startOrderStatusPolling(data.order_id);
+
+    // Invoke Official Cashfree SDK Direct Modal (Zero Custom Fallback Dialogs)
+    if (window.Cashfree) {
+      const cfMode = data.cashfreeEnvironment === 'PRODUCTION' ? 'production' : 'sandbox';
+      const cashfree = window.Cashfree({ mode: cfMode });
+
+      cashfree.checkout({
+        paymentSessionId: data.payment_session_id,
+        redirectTarget: "_modal"
+      }).then(result => {
+        console.log('[Cashfree Modal Result]:', result);
+        checkOrderStatusAfterModal(data.order_id);
+      }).catch(err => {
+        console.warn('[Cashfree Modal Cancelled/Dismissed]:', err);
+        checkOrderStatusAfterModal(data.order_id);
+      });
+    } else {
+      console.warn('Cashfree SDK not loaded in browser.');
+    }
 
   } catch (err) {
     console.error('Error initiating checkout:', err);
@@ -793,16 +807,16 @@ async function initiateCashfreeCheckout() {
   }
 }
 
-// ==================== AUTO-STATUS POLLING ENGINE ====================
+// ==================== AUTO-STATUS POLLING & MODAL RESOLUTION ====================
 function startOrderStatusPolling(orderId) {
   if (state.orderPollInterval) clearInterval(state.orderPollInterval);
 
   state.orderPollInterval = setInterval(() => {
-    checkOrderStatusOnce(orderId);
+    checkOrderStatusOnce(orderId, false);
   }, 2000);
 }
 
-async function checkOrderStatusOnce(orderId) {
+async function checkOrderStatusOnce(orderId, isReturn = false) {
   if (!orderId) return;
 
   try {
@@ -811,98 +825,103 @@ async function checkOrderStatusOnce(orderId) {
 
     if (data.success && data.isPaid) {
       if (state.orderPollInterval) clearInterval(state.orderPollInterval);
-      
-      const modal = document.getElementById('cashfree-payment-modal');
-      if (modal) modal.classList.remove('active');
 
       if (data.status === 'OVER_CAPACITY' || data.overCapacity) {
         showOverCapacityAlert(data.registration);
       } else {
         showRegistrationSuccess(data.registration);
       }
+    } else if (isReturn) {
+      // Returned from gateway redirect without completing payment
+      if (state.orderPollInterval) clearInterval(state.orderPollInterval);
+      showPaymentCancelled(orderId);
     }
   } catch (e) {
     // transient network retry
   }
 }
 
-// ==================== CASHFREE MODAL & FALLBACK UTR LISTENERS ====================
-function setupCashfreeModalListeners() {
-  const modal = document.getElementById('cashfree-payment-modal');
-  const closeBtn = document.getElementById('close-cashfree-modal');
-  const btnVerifyUtr = document.getElementById('btn-self-verify-utr');
-  const utrInput = document.getElementById('input-fallback-utr');
-  const utrFeedback = document.getElementById('utr-feedback-msg');
+// Handles when user closes/cancels Cashfree gateway modal
+async function checkOrderStatusAfterModal(orderId) {
+  if (!orderId) return;
 
-  if (closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      modal.classList.remove('active');
-    });
-  }
+  // Wait 1 second for any in-flight webhook or API confirmation
+  setTimeout(async () => {
+    try {
+      const res = await fetch(`/api/order-status/${orderId}`);
+      const data = await res.json();
 
-  if (btnVerifyUtr) {
-    btnVerifyUtr.addEventListener('click', async () => {
-      const utrVal = utrInput.value.trim();
+      if (data.success && data.isPaid) {
+        if (state.orderPollInterval) clearInterval(state.orderPollInterval);
 
-      if (!/^\d{12}$/.test(utrVal)) {
-        utrFeedback.innerHTML = '<span style="color: #F87171; font-weight: 700;">⚠️ Please enter a valid 12-digit numeric UPI UTR/Ref Number.</span>';
-        utrInput.focus();
-        return;
-      }
-
-      if (!state.activeOrder || !state.activeOrder.order_id) {
-        utrFeedback.innerHTML = '<span style="color: #F87171; font-weight: 700;">⚠️ Order session not active. Please re-initiate checkout.</span>';
-        return;
-      }
-
-      btnVerifyUtr.disabled = true;
-      btnVerifyUtr.innerText = 'Verifying...';
-      utrFeedback.innerHTML = '<span style="color: #38BDF8; font-weight: 700;">⏳ Verifying UTR with database &amp; observers...</span>';
-
-      try {
-        const res = await fetch('/api/verify-utr', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            orderId: state.activeOrder.order_id,
-            utrNumber: utrVal
-          })
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-          if (data.overCapacity) {
-            utrFeedback.innerHTML = '<span style="color: #F59E0B; font-weight: 800;">⚠️ Payment logged! Arena slot filled moments earlier &bull; Priority review...</span>';
-            if (state.orderPollInterval) clearInterval(state.orderPollInterval);
-
-            setTimeout(() => {
-              modal.classList.remove('active');
-              showOverCapacityAlert(data.registration);
-            }, 1200);
-          } else {
-            utrFeedback.innerHTML = '<span style="color: #34D399; font-weight: 800;">✓ UTR Verified! Unlocking official pass...</span>';
-            if (state.orderPollInterval) clearInterval(state.orderPollInterval);
-
-            setTimeout(() => {
-              modal.classList.remove('active');
-              showRegistrationSuccess(data.registration);
-            }, 1200);
-          }
+        if (data.status === 'OVER_CAPACITY' || data.overCapacity) {
+          showOverCapacityAlert(data.registration);
         } else {
-          utrFeedback.innerHTML = `<span style="color: #F87171; font-weight: 700;">❌ ${data.message || 'UTR verification failed.'}</span>`;
+          showRegistrationSuccess(data.registration);
         }
-      } catch (err) {
-        utrFeedback.innerHTML = '<span style="color: #F87171; font-weight: 700;">❌ Server error verifying UTR. Please retry.</span>';
-      } finally {
-        btnVerifyUtr.disabled = false;
-        btnVerifyUtr.innerText = 'Verify UTR →';
+      } else {
+        // User cancelled or closed payment gateway before completing
+        if (state.orderPollInterval) clearInterval(state.orderPollInterval);
+        showPaymentCancelled(orderId);
       }
-    });
-  }
+    } catch (e) {
+      showPaymentCancelled(orderId);
+    }
+  }, 1000);
 }
 
-// ==================== DIGITAL CONFIRMATION PASS ====================
+// ==================== PAYMENT CANCELLED SCREEN ====================
+function showPaymentCancelled(orderId) {
+  if (state.orderPollInterval) clearInterval(state.orderPollInterval);
+
+  document.querySelectorAll('.reg-step-card').forEach(c => c.style.display = 'none');
+  const cancelledCard = document.getElementById('reg-cancelled-card');
+  if (!cancelledCard) return;
+
+  cancelledCard.style.display = 'block';
+  document.getElementById('cancelled-order-id').innerText = orderId || 'TGF_INCOMPLETE';
+
+  const btnRetry = document.getElementById('btn-retry-payment');
+  if (btnRetry) {
+    btnRetry.onclick = () => {
+      cancelledCard.style.display = 'none';
+      setRegStep(3);
+    };
+  }
+
+  const btnEdit = document.getElementById('btn-edit-squad-from-cancelled');
+  if (btnEdit) {
+    btnEdit.onclick = () => {
+      cancelledCard.style.display = 'none';
+      setRegStep(2);
+    };
+  }
+
+  const btnHome = document.getElementById('btn-cancelled-back-home');
+  if (btnHome) {
+    btnHome.onclick = () => {
+      resetRegistrationForm();
+      navigateTo('home');
+    };
+  }
+
+  window.scrollTo({ top: cancelledCard.offsetTop - 80, behavior: 'smooth' });
+}
+
+// Check return URL for gateway redirection
+function checkReturnUrlForPayment() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnOrderId = urlParams.get('order_id');
+    if (returnOrderId) {
+      navigateTo('register', false);
+      checkOrderStatusOnce(returnOrderId, true);
+      window.history.replaceState({}, document.title, window.location.pathname + '#register');
+    }
+  } catch (e) {}
+}
+
+// ==================== DIGITAL CONFIRMATION PASS & PRINTABLE RECEIPT ====================
 function showRegistrationSuccess(reg) {
   state.currentRegData = reg;
   document.querySelectorAll('.reg-step-card').forEach(c => c.style.display = 'none');
@@ -916,6 +935,12 @@ function showRegistrationSuccess(reg) {
   document.getElementById('success-total-paid').innerText = `₹${reg.totalAmount}`;
   document.getElementById('success-pay-id').innerText = reg.utrNumber || reg.paymentId || 'CF_VERIFIED_PAID';
 
+  const dateObj = new Date(reg.registeredAt || reg.createdAt || Date.now());
+  const timestampEl = document.getElementById('success-timestamp-display');
+  if (timestampEl) {
+    timestampEl.innerText = `Paid: ${dateObj.toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
+  }
+
   const compNames = (reg.selectedCompetitions || Array.from(state.selectedCompetitions)).map(cid => {
     const e = state.events.find(ev => ev.id === cid);
     return e ? e.name : cid;
@@ -928,7 +953,7 @@ function showRegistrationSuccess(reg) {
     <li><strong>Member ${idx + 1}:</strong> ${m.name} (${m.usn}, ${m.semester}) &bull; Refreshment: ${m.snackPack === 'pack1' ? 'Pack 1 (Juice Combo)' : 'Pack 2 (Diet Coke Combo)'} (₹${m.snackPrice})</li>
   `).join('');
 
-  // Print button
+  // Print button: triggers standard browser print dialog which uses our print stylesheet
   document.getElementById('btn-print-pass').onclick = () => {
     window.print();
   };
@@ -999,6 +1024,8 @@ function resetRegistrationForm() {
   document.getElementById('reg-success-card').style.display = 'none';
   const overCard = document.getElementById('reg-overcapacity-card');
   if (overCard) overCard.style.display = 'none';
+  const cancelledCard = document.getElementById('reg-cancelled-card');
+  if (cancelledCard) cancelledCard.style.display = 'none';
 
   setRegStep(1);
   renderCompSelector();
