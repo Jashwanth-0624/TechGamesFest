@@ -44,7 +44,7 @@ const EVENT_THEMES = {
     themeClass: 'theme-rose',
     gradient: 'linear-gradient(90deg, #FF3366, #E11D48)',
     accent: '#FF3366',
-    file: 'arena_05_debate.cpp',
+    file: 'arena_05_vox_debate.cpp',
     lang: 'C++20'
   },
   'artistry': {
@@ -264,7 +264,7 @@ function renderRulesSection() {
     'collage-making': { theme: 'theme-amber', file: 'track_02_collage_chronicles.c', lang: 'ANSI C' },
     'pitch-perfect': { theme: 'theme-cyan', file: 'track_03_pitch_perfect_no_ai.rs', lang: 'Rust Engine' },
     'dumb-charades': { theme: 'theme-purple', file: 'track_04_mudra_mime_charades.js', lang: 'Node.js' },
-    'debate': { theme: 'theme-rose', file: 'track_05_clash_of_minds_debate.cpp', lang: 'C++20' }
+    'debate': { theme: 'theme-rose', file: 'track_05_vox_debate.cpp', lang: 'C++20' }
   };
 
   const defaultThemes = ['theme-emerald', 'theme-amber', 'theme-cyan', 'theme-purple', 'theme-rose', 'theme-yellow', 'theme-indigo'];
@@ -815,7 +815,11 @@ async function checkOrderStatusOnce(orderId) {
       const modal = document.getElementById('cashfree-payment-modal');
       if (modal) modal.classList.remove('active');
 
-      showRegistrationSuccess(data.registration);
+      if (data.status === 'OVER_CAPACITY' || data.overCapacity) {
+        showOverCapacityAlert(data.registration);
+      } else {
+        showRegistrationSuccess(data.registration);
+      }
     }
   } catch (e) {
     // transient network retry
@@ -868,13 +872,23 @@ function setupCashfreeModalListeners() {
         const data = await res.json();
 
         if (data.success) {
-          utrFeedback.innerHTML = '<span style="color: #34D399; font-weight: 800;">✓ UTR Verified! Unlocking official pass...</span>';
-          if (state.orderPollInterval) clearInterval(state.orderPollInterval);
+          if (data.overCapacity) {
+            utrFeedback.innerHTML = '<span style="color: #F59E0B; font-weight: 800;">⚠️ Payment logged! Arena slot filled moments earlier &bull; Priority review...</span>';
+            if (state.orderPollInterval) clearInterval(state.orderPollInterval);
 
-          setTimeout(() => {
-            modal.classList.remove('active');
-            showRegistrationSuccess(data.registration);
-          }, 1200);
+            setTimeout(() => {
+              modal.classList.remove('active');
+              showOverCapacityAlert(data.registration);
+            }, 1200);
+          } else {
+            utrFeedback.innerHTML = '<span style="color: #34D399; font-weight: 800;">✓ UTR Verified! Unlocking official pass...</span>';
+            if (state.orderPollInterval) clearInterval(state.orderPollInterval);
+
+            setTimeout(() => {
+              modal.classList.remove('active');
+              showRegistrationSuccess(data.registration);
+            }, 1200);
+          }
         } else {
           utrFeedback.innerHTML = `<span style="color: #F87171; font-weight: 700;">❌ ${data.message || 'UTR verification failed.'}</span>`;
         }
@@ -927,6 +941,41 @@ function showRegistrationSuccess(reg) {
   window.scrollTo({ top: successCard.offsetTop - 80, behavior: 'smooth' });
 }
 
+// ==================== OVERCAPACITY PRIORITY RESOLUTION CARD ====================
+function showOverCapacityAlert(reg) {
+  state.currentRegData = reg;
+  document.querySelectorAll('.reg-step-card').forEach(c => c.style.display = 'none');
+  const alertCard = document.getElementById('reg-overcapacity-card');
+  if (!alertCard) return;
+
+  alertCard.style.display = 'block';
+
+  document.getElementById('overcapacity-reg-id').innerText = reg.id || 'TGF-2026-PRIORITY';
+  document.getElementById('overcapacity-team-name').innerText = reg.teamName || document.getElementById('input-team-name').value;
+  document.getElementById('overcapacity-total-paid').innerText = `₹${reg.totalAmount}`;
+  document.getElementById('overcapacity-pay-id').innerText = reg.utrNumber || reg.paymentId || 'CF_UTR_LOGGED';
+
+  const fullComps = reg.overCapacityEvents || [];
+  const compNames = fullComps.length > 0 
+    ? fullComps.join(', ')
+    : (reg.selectedCompetitions || Array.from(state.selectedCompetitions)).map(cid => {
+        const e = state.events.find(ev => ev.id === cid);
+        return e ? e.name : cid;
+      }).join(', ');
+
+  document.getElementById('overcapacity-events-list').innerText = compNames;
+
+  const btnBack = document.getElementById('btn-overcapacity-back');
+  if (btnBack) {
+    btnBack.onclick = () => {
+      resetRegistrationForm();
+      navigateTo('home');
+    };
+  }
+
+  window.scrollTo({ top: alertCard.offsetTop - 80, behavior: 'smooth' });
+}
+
 function resetRegistrationForm() {
   state.selectedCompetitions.clear();
   state.activeOrder = null;
@@ -948,6 +997,9 @@ function resetRegistrationForm() {
   }
 
   document.getElementById('reg-success-card').style.display = 'none';
+  const overCard = document.getElementById('reg-overcapacity-card');
+  if (overCard) overCard.style.display = 'none';
+
   setRegStep(1);
   renderCompSelector();
   calculateRegistrationPricing();

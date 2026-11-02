@@ -753,6 +753,72 @@
           </div>
         </div>
 
+        <!-- High-Concurrency Overcapacity Priority Resolution Card -->
+        <div class="reg-step-card" id="reg-overcapacity-card" style="display: none; border: 1.5px solid rgba(245, 158, 11, 0.5);">
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 70px; height: 70px; background: rgba(245, 158, 11, 0.15); border: 1.5px solid rgba(245, 158, 11, 0.4); color: #F59E0B; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 2.2rem; margin-bottom: 1rem; box-shadow: 0 0 30px rgba(245, 158, 11, 0.25);">
+              ⚠️
+            </div>
+            <h3 style="font-size: 2rem; font-weight: 900; color: #FFFFFF; margin-bottom: 0.35rem;">Payment Received &bull; Slot Limit Reached</h3>
+            <p style="font-size: 0.95rem; color: #FCD34D;">Your payment was securely recorded, but the final slot for your competition was claimed by another team moments earlier.</p>
+          </div>
+
+          <div class="pass-ticket-card" style="border-left: 4px solid #F59E0B;">
+            <div class="pass-header">
+              <div>
+                <span style="font-size: 0.72rem; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">ORDER REFERENCE</span>
+                <div id="overcapacity-reg-id" class="pass-id-tag" style="color: #F59E0B;">TGF-2026-XXXX</div>
+              </div>
+              <div style="font-size: 0.75rem; background: rgba(245, 158, 11, 0.2); color: #F59E0B; padding: 0.35rem 0.85rem; border-radius: 9999px; font-weight: 800; border: 1px solid rgba(245, 158, 11, 0.4);">
+                PRIORITY REVIEW ACTIVE
+              </div>
+            </div>
+
+            <div class="pass-data-grid">
+              <div class="pass-data-item">
+                <label>Team Name</label>
+                <div id="overcapacity-team-name">-</div>
+              </div>
+              <div class="pass-data-item">
+                <label>Amount Received</label>
+                <div id="overcapacity-total-paid" style="color: #34D399;">₹0</div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+              <span style="font-size: 0.72rem; color: #64748B; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 0.35rem;">AFFECTED COMPETITION TRACK(S)</span>
+              <div id="overcapacity-events-list" style="font-size: 0.95rem; font-weight: 700; color: #F87171;">-</div>
+            </div>
+
+            <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 1rem; margin-bottom: 1.25rem;">
+              <strong style="color: #FBBF24; display: block; margin-bottom: 0.4rem; font-size: 0.9rem;">What happens next?</strong>
+              <p style="font-size: 0.82rem; color: #E2E8F0; line-height: 1.6; margin-bottom: 0.5rem;">
+                Your payment and bank reference are securely registered in our system. Because multiple teams completed checkout at the exact same moment for the final remaining slot, our slot protection engine locked the arena to prevent overcrowding.
+              </p>
+              <p style="font-size: 0.82rem; color: #CBD5E1; line-height: 1.6;">
+                Our student coordinators will contact your team lead directly to offer <strong>priority reassignment to an alternative competition track</strong> or process an <strong>immediate 100% full refund</strong>.
+              </p>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 1rem; margin-top: 1rem; font-size: 0.82rem; color: #94A3B8;">
+              <span>Transaction Ref: <strong id="overcapacity-pay-id" style="color: #F8FAFC;">-</strong></span>
+              <span style="color: #38BDF8; font-weight: 700;">Recorded in Master Roster</span>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+            <a href="tel:8904418566" class="btn-primary" style="text-decoration: none; font-size: 0.9rem;">
+              📞 Call Coordinator (Maduraa BS)
+            </a>
+            <a href="tel:8310817516" class="btn-secondary" style="text-decoration: none; font-size: 0.9rem;">
+              📞 Call Tech Support (Jashwanth R)
+            </a>
+            <button class="btn-secondary" id="btn-overcapacity-back" style="font-size: 0.9rem;">
+              ← Back to Fest Home
+            </button>
+          </div>
+        </div>
+
       </div>
     </section>
 

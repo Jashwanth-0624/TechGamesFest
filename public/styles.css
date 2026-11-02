@@ -2755,6 +2755,25 @@ h1, h2, h3, h4, .brand-font {
     font-size: 0.75rem;
   }
 
+  /* Digital Pass & Overcapacity Card Mobile Optimization */
+  .pass-ticket-card {
+    padding: 1.45rem 1.15rem;
+    border-radius: 18px;
+    margin-bottom: 1.5rem;
+  }
+  .pass-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .pass-data-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .pass-id-tag {
+    font-size: 1.35rem;
+  }
+
   /* Cashfree Modal & Fallback Box */
   .cashfree-modal-box {
     width: 95vw;

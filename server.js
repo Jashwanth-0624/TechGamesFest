@@ -57,10 +57,77 @@ if (!fs.existsSync(REGISTRATIONS_FILE)) {
   writeJSON(REGISTRATIONS_FILE, []);
 }
 
+// ==================== ASYNC MUTEX LOCK QUEUE FOR HIGH-TRAFFIC CONCURRENCY ====================
+// Serializes database writes and prevents race-condition lapses when multiple users pay simultaneously
+let fileLockQueue = Promise.resolve();
+function withFileLock(fn) {
+  const next = fileLockQueue.then(() => fn(), () => fn());
+  fileLockQueue = next.catch(() => {});
+  return next;
+}
+
+// ==================== ADMIN SECURITY & AUTHENTICATION ENGINE ====================
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'v24j063012';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'VibhaJash**3012@';
+
+// Cryptographic session registry: token -> { username, createdAt, expiresAt }
+const adminSessions = new Map();
+
+// Rate limiter for login attempts (IP -> { count, lockedUntil })
+const loginAttempts = new Map();
+
+function verifyCredentials(user, pass) {
+  if (typeof user !== 'string' || typeof pass !== 'string') return false;
+  try {
+    const userBuf = Buffer.from(user);
+    const targetUserBuf = Buffer.from(ADMIN_USERNAME);
+    const passBuf = Buffer.from(pass);
+    const targetPassBuf = Buffer.from(ADMIN_PASSWORD);
+
+    const userMatch = userBuf.length === targetUserBuf.length && crypto.timingSafeEqual(userBuf, targetUserBuf);
+    const passMatch = passBuf.length === targetPassBuf.length && crypto.timingSafeEqual(passBuf, targetPassBuf);
+
+    return userMatch && passMatch;
+  } catch (e) {
+    return false;
+  }
+}
+
+function requireAdminAuth(req, res, next) {
+  let token = null;
+  const authHeader = req.headers['authorization'];
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.slice(7).trim();
+  } else if (req.headers['x-admin-token']) {
+    token = req.headers['x-admin-token'].trim();
+  } else if (req.query && req.query.token) {
+    token = req.query.token.trim();
+  }
+
+  if (!token || !adminSessions.has(token)) {
+    return res.status(401).json({
+      success: false,
+      message: 'Unauthorized access. Valid administrator session required.'
+    });
+  }
+
+  const session = adminSessions.get(token);
+  if (Date.now() > session.expiresAt) {
+    adminSessions.delete(token);
+    return res.status(401).json({
+      success: false,
+      message: 'Admin session expired. Please log in again.'
+    });
+  }
+
+  req.adminSession = session;
+  next();
+}
+
 // ==================== CASHFREE PAYMENTS INITIALIZATION ====================
 const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID || process.env.CF_APP_ID || '';
 const CASHFREE_SECRET_KEY = process.env.CASHFREE_SECRET_KEY || process.env.CF_SECRET_KEY || '';
-const CASHFREE_ENV = (process.env.CASHFREE_ENV || 'SANDBOX').toUpperCase();
+const CASHFREE_ENV = (process.env.CASHFREE_ENV || 'PRODUCTION').toUpperCase();
 const cfEnvEnum = (CFEnvironment && CASHFREE_ENV === 'PRODUCTION') ? CFEnvironment.PRODUCTION : (CFEnvironment?.SANDBOX || 1);
 
 let cashfreeInstance = null;
@@ -334,10 +401,12 @@ app.post('/api/register-team', async (req, res) => {
 
     activeOrders.set(orderId, orderRecord);
 
-    // Save pending record in registrations file
-    const registrations = readJSON(REGISTRATIONS_FILE, []);
-    registrations.push(orderRecord);
-    writeJSON(REGISTRATIONS_FILE, registrations);
+    // Save pending record in registrations file safely with mutex lock
+    await withFileLock(async () => {
+      const registrations = readJSON(REGISTRATIONS_FILE, []);
+      registrations.push(orderRecord);
+      writeJSON(REGISTRATIONS_FILE, registrations);
+    });
 
     broadcast('ORDER_INITIATED', {
       orderId,
@@ -361,57 +430,112 @@ app.post('/api/register-team', async (req, res) => {
   }
 });
 
-// Helper: Confirm registration and lock slots
-function confirmRegistrationSuccess(orderId, paymentId, utrNumber, source = 'Cashfree Webhook') {
-  const registrations = readJSON(REGISTRATIONS_FILE, []);
-  const regIndex = registrations.findIndex(r => r.orderId === orderId);
+// Helper: Confirm registration and lock slots (Atomic with Mutex File Lock & Traffic Management)
+async function confirmRegistrationSuccess(orderId, paymentId, utrNumber, source = 'Cashfree Webhook') {
+  return withFileLock(async () => {
+    const registrations = readJSON(REGISTRATIONS_FILE, []);
+    let regIndex = registrations.findIndex(r => r.orderId === orderId);
+    let reg = regIndex !== -1 ? registrations[regIndex] : null;
 
-  let updatedRecord = null;
-
-  if (regIndex !== -1) {
-    if (registrations[regIndex].paymentStatus === 'SUCCESS') {
-      return registrations[regIndex];
+    if (!reg && activeOrders.has(orderId)) {
+      reg = activeOrders.get(orderId);
+      registrations.push(reg);
+      regIndex = registrations.length - 1;
     }
-    registrations[regIndex].paymentStatus = 'SUCCESS';
-    registrations[regIndex].paymentId = paymentId || `CF_${Date.now()}`;
-    registrations[regIndex].utrNumber = utrNumber || `UTR_${Date.now().toString().slice(-8)}`;
-    registrations[regIndex].verifiedVia = source;
-    registrations[regIndex].registeredAt = new Date().toISOString();
-    updatedRecord = registrations[regIndex];
-    writeJSON(REGISTRATIONS_FILE, registrations);
-  } else if (activeOrders.has(orderId)) {
-    const memOrder = activeOrders.get(orderId);
-    memOrder.paymentStatus = 'SUCCESS';
-    memOrder.paymentId = paymentId || `CF_${Date.now()}`;
-    memOrder.utrNumber = utrNumber || `UTR_${Date.now().toString().slice(-8)}`;
-    memOrder.verifiedVia = source;
-    memOrder.registeredAt = new Date().toISOString();
-    registrations.push(memOrder);
-    updatedRecord = memOrder;
-    writeJSON(REGISTRATIONS_FILE, registrations);
-  }
 
-  if (activeOrders.has(orderId)) {
-    const o = activeOrders.get(orderId);
-    o.paymentStatus = 'SUCCESS';
-    o.paymentId = paymentId;
-    o.utrNumber = utrNumber;
-  }
+    if (!reg) {
+      console.warn(`[Confirm Payment] Order ID ${orderId} not found in database or memory.`);
+      return null;
+    }
 
-  // Broadcast updated slots & successful registration live
-  broadcastSlotsUpdate();
-  broadcast('PAYMENT_CONFIRMED', {
-    orderId,
-    registrationId: updatedRecord?.id,
-    teamName: updatedRecord?.teamName,
-    amount: updatedRecord?.totalAmount
+    // Idempotency: if already confirmed, return it immediately
+    if (reg.paymentStatus === 'SUCCESS') {
+      return reg;
+    }
+
+    // ATOMIC CAPACITY CHECK (Traffic Management for Simultaneous Payers)
+    // Recalculate current confirmed slot occupancy across all events
+    const events = readJSON(EVENTS_FILE, []);
+    const eventCounts = {};
+    events.forEach(e => { eventCounts[e.id] = 0; });
+
+    registrations.forEach(r => {
+      if (r.paymentStatus === 'SUCCESS' && Array.isArray(r.selectedCompetitions) && r.orderId !== orderId) {
+        r.selectedCompetitions.forEach(cid => {
+          if (eventCounts[cid] !== undefined) eventCounts[cid]++;
+        });
+      }
+    });
+
+    // Check if any of this squad's competitions are already at max capacity
+    const overCapacityEvents = [];
+    (reg.selectedCompetitions || []).forEach(cid => {
+      const evt = events.find(e => e.id === cid);
+      if (evt) {
+        const currentFilled = eventCounts[cid] || 0;
+        if (currentFilled >= evt.totalSlots) {
+          overCapacityEvents.push(evt.name);
+        }
+      }
+    });
+
+    if (overCapacityEvents.length > 0) {
+      // OVER-CAPACITY SCENARIO: (e.g. 2 slots left, 3 teams paying at once)
+      // Another team paid a few moments earlier and took the remaining slot.
+      console.warn(`[Over-Capacity Alert] Order ${orderId} for team "${reg.teamName}" was paid, but competition(s) ${overCapacityEvents.join(', ')} are full.`);
+
+      reg.paymentStatus = 'OVER_CAPACITY';
+      reg.paymentId = paymentId || `CF_${Date.now()}`;
+      reg.utrNumber = utrNumber || `UTR_${Date.now().toString().slice(-8)}`;
+      reg.verifiedVia = source;
+      reg.registeredAt = new Date().toISOString();
+      reg.overCapacityEvents = overCapacityEvents;
+      reg.overCapacityNotice = `Payment received, but the final slot for ${overCapacityEvents.join(', ')} was locked by another team moments earlier. Our student coordinators will contact you or issue an immediate 100% refund.`;
+
+      writeJSON(REGISTRATIONS_FILE, registrations);
+
+      if (activeOrders.has(orderId)) {
+        activeOrders.set(orderId, reg);
+      }
+
+      broadcast('PAYMENT_OVER_CAPACITY', {
+        orderId,
+        teamName: reg.teamName,
+        overCapacityEvents,
+        amount: reg.totalAmount
+      });
+
+      return reg;
+    }
+
+    // NORMAL SUCCESS: Slots locked!
+    reg.paymentStatus = 'SUCCESS';
+    reg.paymentId = paymentId || `CF_${Date.now()}`;
+    reg.utrNumber = utrNumber || `UTR_${Date.now().toString().slice(-8)}`;
+    reg.verifiedVia = source;
+    reg.registeredAt = new Date().toISOString();
+
+    writeJSON(REGISTRATIONS_FILE, registrations);
+
+    if (activeOrders.has(orderId)) {
+      activeOrders.set(orderId, reg);
+    }
+
+    // Broadcast updated slots & successful registration live
+    broadcastSlotsUpdate();
+    broadcast('PAYMENT_CONFIRMED', {
+      orderId,
+      registrationId: reg.id,
+      teamName: reg.teamName,
+      amount: reg.totalAmount
+    });
+
+    return reg;
   });
-
-  return updatedRecord;
 }
 
 // 4. Cryptographic Webhook Automation (POST /api/webhook/cashfree)
-app.post('/api/webhook/cashfree', (req, res) => {
+app.post('/api/webhook/cashfree', async (req, res) => {
   try {
     const signature = req.headers['x-webhook-signature'];
     const timestamp = req.headers['x-webhook-timestamp'];
@@ -454,7 +578,11 @@ app.post('/api/webhook/cashfree', (req, res) => {
       const utr = paymentData.bank_reference || paymentData.payment_gateway_details?.utr || `CF_UTR_${Date.now().toString().slice(-8)}`;
       const cfPaymentId = paymentData.cf_payment_id || `CF_PAY_${Date.now()}`;
 
-      const confirmed = confirmRegistrationSuccess(orderId, cfPaymentId, utr, 'Cashfree Webhook (Cryptographic)');
+      const confirmed = await confirmRegistrationSuccess(orderId, cfPaymentId, utr, 'Cashfree Webhook (Cryptographic)');
+      if (confirmed?.paymentStatus === 'OVER_CAPACITY') {
+        console.warn(`[Cashfree Webhook] Order ${orderId} reached capacity. Team: ${confirmed?.teamName}`);
+        return res.status(200).json({ success: true, message: 'Webhook received. Slot capacity was reached; flagged for coordinator review/refund.' });
+      }
       console.log(`[Cashfree Webhook] Order ${orderId} successfully marked PAID! Pass issued for team: ${confirmed?.teamName}`);
       return res.status(200).json({ success: true, message: 'Webhook processed. Registration confirmed.' });
     }
@@ -469,7 +597,7 @@ app.post('/api/webhook/cashfree', (req, res) => {
 
 // 5. Fallback Manual UTR Self-Verification Input Query (POST /api/verify-utr)
 // Positioned directly below loading checkout screen for delayed SMS/notifications
-app.post('/api/verify-utr', (req, res) => {
+app.post('/api/verify-utr', async (req, res) => {
   try {
     const { orderId, utrNumber } = req.body;
 
@@ -496,7 +624,16 @@ app.post('/api/verify-utr', (req, res) => {
     }
 
     // Confirm registration via UTR verification query
-    const confirmed = confirmRegistrationSuccess(orderId, `UTR_VERIFIED_${cleanUtr.slice(-6)}`, cleanUtr, 'Self-Verified via 12-digit UTR');
+    const confirmed = await confirmRegistrationSuccess(orderId, `UTR_VERIFIED_${cleanUtr.slice(-6)}`, cleanUtr, 'Self-Verified via 12-digit UTR');
+
+    if (confirmed?.paymentStatus === 'OVER_CAPACITY') {
+      return res.json({
+        success: true,
+        overCapacity: true,
+        message: confirmed.overCapacityNotice,
+        registration: confirmed
+      });
+    }
 
     res.json({
       success: true,
@@ -520,6 +657,18 @@ app.get('/api/order-status/:orderId', (req, res) => {
     return res.status(404).json({ success: false, message: 'Order not found.' });
   }
 
+  if (reg.paymentStatus === 'OVER_CAPACITY') {
+    return res.json({
+      success: true,
+      orderId: reg.orderId,
+      status: 'OVER_CAPACITY',
+      isPaid: true,
+      overCapacity: true,
+      message: reg.overCapacityNotice || 'Slot capacity was filled by other teams before payment confirmation. Priority review active.',
+      registration: reg
+    });
+  }
+
   res.json({
     success: true,
     orderId: reg.orderId,
@@ -529,27 +678,117 @@ app.get('/api/order-status/:orderId', (req, res) => {
   });
 });
 
-// 7. Admin Master Roster & Data (GET /api/admin/registrations)
-app.get('/api/admin/registrations', (req, res) => {
-  const registrations = readJSON(REGISTRATIONS_FILE, []).filter(r => r.paymentStatus === 'SUCCESS');
+// ==================== ADMIN AUTHENTICATION & SECURE ACCESS CONTROL ====================
+
+// Admin Login Endpoint (POST /api/admin/login)
+app.post('/api/admin/login', (req, res) => {
+  const ip = req.ip || req.connection?.remoteAddress || 'unknown';
+  const now = Date.now();
+
+  // Rate limiting: 5 failed attempts in 15 minutes
+  const attemptInfo = loginAttempts.get(ip) || { count: 0, lockedUntil: 0 };
+  if (attemptInfo.lockedUntil > now) {
+    const minutesLeft = Math.ceil((attemptInfo.lockedUntil - now) / 60000);
+    return res.status(429).json({
+      success: false,
+      message: `Too many failed login attempts. Security lock active for ${minutesLeft} minute(s).`
+    });
+  }
+
+  const { username, password } = req.body || {};
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'Username and password are required.' });
+  }
+
+  const isValid = verifyCredentials(username.trim(), password.trim());
+  if (!isValid) {
+    attemptInfo.count += 1;
+    if (attemptInfo.count >= 5) {
+      attemptInfo.lockedUntil = now + 15 * 60 * 1000;
+      console.warn(`[Admin Security] IP ${ip} locked out after 5 consecutive failed login attempts.`);
+    }
+    loginAttempts.set(ip, attemptInfo);
+    return res.status(401).json({ success: false, message: 'Invalid administrator credentials. Access denied.' });
+  }
+
+  // Clear attempts on success
+  loginAttempts.delete(ip);
+
+  // Generate 256-bit cryptographically secure session token
+  const token = crypto.randomBytes(32).toString('hex');
+  const sessionData = {
+    username: ADMIN_USERNAME,
+    ip,
+    createdAt: now,
+    expiresAt: now + 24 * 60 * 60 * 1000 // 24 hours
+  };
+  adminSessions.set(token, sessionData);
+
+  console.log(`[Admin Security] Authorized login for user "${ADMIN_USERNAME}" from IP: ${ip}`);
+
+  res.json({
+    success: true,
+    message: 'Authentication successful. Command Center unlocked.',
+    token,
+    username: ADMIN_USERNAME,
+    expiresAt: sessionData.expiresAt
+  });
+});
+
+// Admin Logout Endpoint (POST /api/admin/logout)
+app.post('/api/admin/logout', (req, res) => {
+  let token = null;
+  const authHeader = req.headers['authorization'];
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.slice(7).trim();
+  } else if (req.headers['x-admin-token']) {
+    token = req.headers['x-admin-token'].trim();
+  } else if (req.body && req.body.token) {
+    token = req.body.token.trim();
+  }
+
+  if (token && adminSessions.has(token)) {
+    adminSessions.delete(token);
+  }
+
+  res.json({ success: true, message: 'Logged out successfully.' });
+});
+
+// Admin Session Verification Endpoint (GET /api/admin/verify-session)
+app.get('/api/admin/verify-session', requireAdminAuth, (req, res) => {
+  res.json({
+    success: true,
+    authenticated: true,
+    username: req.adminSession.username,
+    expiresAt: req.adminSession.expiresAt
+  });
+});
+
+// 7. Admin Master Roster & Data (GET /api/admin/registrations) [PROTECTED]
+app.get('/api/admin/registrations', requireAdminAuth, (req, res) => {
+  const registrations = readJSON(REGISTRATIONS_FILE, []);
+  const confirmed = registrations.filter(r => r.paymentStatus === 'SUCCESS');
+  const overCapacity = registrations.filter(r => r.paymentStatus === 'OVER_CAPACITY');
   const events = getEventsWithSlots();
 
-  const totalTeams = registrations.length;
+  const totalTeams = confirmed.length;
   const totalStudents = totalTeams * 3;
-  const totalRevenue = registrations.reduce((sum, r) => sum + (r.totalAmount || 0), 0);
+  const totalRevenue = confirmed.reduce((sum, r) => sum + (r.totalAmount || 0), 0);
 
   res.json({
     success: true,
     totalTeams,
     totalStudents,
     totalRevenue,
+    overCapacityCount: overCapacity.length,
+    overCapacityTeams: overCapacity,
     events,
-    registrations
+    registrations: confirmed
   });
 });
 
-// 8. Admin Export CSV Endpoint (GET /api/admin/export)
-app.get('/api/admin/export', (req, res) => {
+// 8. Admin Export CSV Endpoint (GET /api/admin/export) [PROTECTED]
+app.get('/api/admin/export', requireAdminAuth, (req, res) => {
   const { compId } = req.query;
   const registrations = readJSON(REGISTRATIONS_FILE, []).filter(r => r.paymentStatus === 'SUCCESS');
   const events = readJSON(EVENTS_FILE, []);

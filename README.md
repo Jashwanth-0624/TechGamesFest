@@ -16,7 +16,7 @@
      - 🟠 **Arena #2 (Collage)**: Amber Gold (`#F59E0B`)
      - 🔵 **Arena #3 (Pitch Perfect)**: Electric Cyan (`#00E5FF`)
      - 🟣 **Arena #4 (Charades)**: Cyber Purple (`#A855F7`)
-     - 🔴 **Arena #5 (Debate)**: Radical Rose (`#FF3366`)
+     - 🔴 **Arena #5 (VOX Debate)**: Radical Rose (`#FF3366`)
      - 🟡 **Arena #6 (Artistry)**: Teal Stream (`#14B8A6`)
      - 🟣 **Arena #7 (Pictionary)**: Quantum Indigo (`#818CF8`)
 

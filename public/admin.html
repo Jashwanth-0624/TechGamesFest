@@ -8,7 +8,7 @@
   <link rel="icon" href="assets/code-sanket.jpeg" type="image/jpeg">
   <style>
     .admin-container {
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 0 auto;
       padding-top: 1rem;
     }
@@ -127,6 +127,132 @@
     .admin-table tr:hover td {
       background: rgba(255, 255, 255, 0.02);
     }
+
+    /* ==================== ADMIN LOGIN MODAL / GATE ==================== */
+    .admin-login-wrapper {
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .admin-login-card {
+      background: linear-gradient(135deg, rgba(16, 20, 32, 0.96) 0%, rgba(9, 12, 20, 0.98) 100%);
+      border: 1.5px solid rgba(0, 255, 157, 0.35);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(0, 255, 157, 0.12);
+      overflow: hidden;
+      animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .login-terminal-bar {
+      background: rgba(8, 10, 16, 0.95);
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .login-body {
+      padding: 2rem 1.75rem;
+    }
+    .login-input-group {
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+    .login-input-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .login-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .login-input {
+      width: 100%;
+      padding: 0.85rem 2.75rem 0.85rem 1rem;
+      font-size: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-medium);
+      background: rgba(10, 14, 24, 0.9);
+      color: #FFFFFF;
+      outline: none;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: all 0.2s ease;
+    }
+    .login-input:focus {
+      border-color: #00FF9D;
+      box-shadow: 0 0 15px rgba(0, 255, 157, 0.25);
+    }
+    .btn-toggle-eye {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #94A3B8;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-toggle-eye:hover {
+      color: #FFFFFF;
+    }
+    .login-error-box {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      color: #F87171;
+      font-size: 0.82rem;
+      margin-bottom: 1.25rem;
+      display: none;
+      line-height: 1.5;
+    }
+
+    /* Overcapacity Concurrency Alert */
+    .overcapacity-banner {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.12) 100%);
+      border: 1.5px solid rgba(245, 158, 11, 0.5);
+      border-radius: 20px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);
+    }
+
+    @media (max-width: 768px) {
+      .admin-header-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .admin-stats-grid {
+        gap: 1rem;
+      }
+      .stat-metric-card {
+        padding: 1.25rem;
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+      .admin-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .admin-search-input {
+        min-width: 100%;
+      }
+      .login-body {
+        padding: 1.5rem 1.25rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -136,16 +262,29 @@
     <div class="header-inner">
       <div style="display: flex; align-items: center; gap: 0.85rem;">
         <span style="font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; color: #FFFFFF;">🔒 Organizer Command Center</span>
-        <span style="font-size: 0.75rem; background: rgba(6, 182, 212, 0.15); color: #38BDF8; padding: 2px 10px; border-radius: 9999px; font-weight: 800; border: 1px solid rgba(6, 182, 212, 0.35);">
+        <span style="font-size: 0.75rem; background: rgba(0, 255, 157, 0.15); color: #00FF9D; padding: 2px 10px; border-radius: 9999px; font-weight: 800; border: 1px solid rgba(0, 255, 157, 0.35);">
           Cashfree Live Engine
         </span>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <div class="live-sync-indicator">
+      <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <!-- Authenticated User Pill -->
+        <span id="admin-user-pill" style="display: none; font-size: 0.78rem; background: rgba(16, 185, 129, 0.15); color: #34D399; padding: 4px 12px; border-radius: 9999px; border: 1px solid rgba(16, 185, 129, 0.35); font-weight: 800;">
+          🛡️ Convener: <strong id="admin-logged-user">v24j063012</strong>
+        </span>
+
+        <!-- Live SSE indicator -->
+        <div class="live-sync-indicator" id="admin-sse-pill" style="display: none;">
           <span class="pulse-dot"></span>
-          <span>Live SSE Synced</span>
+          <span>Live Synced</span>
         </div>
+
+        <!-- Logout Button -->
+        <button id="btn-admin-logout" class="btn-secondary" style="display: none; padding: 0.4rem 0.85rem; font-size: 0.8rem;">
+          🚪 Logout
+        </button>
+
+        <!-- Public Link -->
         <a href="/" class="btn-secondary" style="padding: 0.45rem 1rem; font-size: 0.85rem; text-decoration: none;">
           ← View Public Fest Site
         </a>
@@ -156,134 +295,223 @@
   <main class="main-wrapper">
     <div class="admin-container">
 
-      <!-- Header row with Action Buttons -->
-      <div class="admin-header-row">
-        <div>
-          <span class="hero-teaser">Confidential • Coordinators &amp; Conveners</span>
-          <h1 class="section-title" style="font-size: 2.2rem;">Fest Registrations &amp; Live Rosters</h1>
-          <p class="section-subtitle">Real-time team verification, cryptographic Cashfree webhook logs, and automated slot allocations.</p>
-        </div>
-        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-          <button class="btn-secondary" id="btn-export-all" style="font-size: 0.88rem; padding: 0.65rem 1.25rem;">
-            📥 Export All Teams (CSV)
-          </button>
-          <button class="btn-primary" id="btn-export-filtered" style="font-size: 0.88rem; padding: 0.65rem 1.25rem;">
-            📥 Export Filtered (CSV)
-          </button>
-        </div>
-      </div>
-
-      <!-- High-level Metric Cards (Centered) -->
-      <div class="admin-stats-grid">
-        <div class="stat-metric-card">
-          <div class="stat-metric-label">Confirmed Teams</div>
-          <div class="stat-metric-val" id="admin-total-teams">0</div>
-          <span style="font-size: 0.75rem; color: #34D399; background: rgba(16, 185, 129, 0.15); padding: 3px 8px; border-radius: 4px; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.3);">
-            Live Confirmed
-          </span>
-        </div>
-
-        <div class="stat-metric-card">
-          <div class="stat-metric-label">Total Registered Students</div>
-          <div class="stat-metric-val" id="admin-total-students">0</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted);">3 participants compulsory / team</span>
-        </div>
-
-        <div class="stat-metric-card">
-          <div class="stat-metric-label">Aggregate Revenue Collected</div>
-          <div class="stat-metric-val" id="admin-total-revenue" style="color: #34D399;">₹0</div>
-          <span style="font-size: 0.75rem; color: var(--text-muted);">Snack passes aggregate</span>
-        </div>
-      </div>
-
-      <!-- ==================== CASHFREE GATEWAY & WEBHOOK ENGINE STATUS ==================== -->
-      <div class="gateway-security-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #10B981, #06B6D4); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.2rem;">
-              ⚡
+      <!-- ==================== VIEW 1: SECURE AUTHENTICATION GATE ==================== -->
+      <div id="admin-login-view" class="admin-login-wrapper">
+        <div class="admin-login-card">
+          <!-- Terminal Chrome Bar -->
+          <div class="login-terminal-bar">
+            <div style="display: flex; gap: 6px;">
+              <span class="dot-red"></span>
+              <span class="dot-yellow"></span>
+              <span class="dot-green"></span>
             </div>
-            <div>
-              <h3 style="font-size: 1.25rem; font-weight: 800; color: #FFFFFF;">Cashfree Payments Gateway &amp; Webhook Engine</h3>
-              <p style="font-size: 0.8rem; color: var(--text-muted);">Cryptographic HMAC-SHA256 signature verification &bull; Zero manual admin button overrides required</p>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #00FF9D; font-weight: 700;">
+              auth_gateway.py &bull; [Protected Area]
+            </span>
+            <span style="font-size: 0.72rem; color: #64748B;">SHA-256</span>
+          </div>
+
+          <div class="login-body">
+            <div style="text-align: center; margin-bottom: 1.75rem;">
+              <div style="width: 56px; height: 56px; margin: 0 auto 0.85rem auto; border-radius: 16px; background: rgba(0, 255, 157, 0.12); border: 1.5px solid rgba(0, 255, 157, 0.35); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #00FF9D;">
+                🛡️
+              </div>
+              <h2 style="font-size: 1.5rem; font-weight: 900; color: #FFFFFF; margin-bottom: 0.35rem;">Command Center Login</h2>
+              <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+                Confidential organizer terminal. Enter designated convener credentials to access live team rosters and Cashfree audit trails.
+              </p>
+            </div>
+
+            <!-- Error message container -->
+            <div id="admin-login-error" class="login-error-box"></div>
+
+            <form id="admin-login-form" autocomplete="off">
+              <div class="login-input-group">
+                <label for="admin-username">Convener Username</label>
+                <div class="login-input-wrap">
+                  <input type="text" id="admin-username" class="login-input" placeholder="e.g. v24j063012" required autofocus spellcheck="false" autocomplete="username">
+                </div>
+              </div>
+
+              <div class="login-input-group">
+                <label for="admin-password">Master Key / Password</label>
+                <div class="login-input-wrap">
+                  <input type="password" id="admin-password" class="login-input" placeholder="Enter security password" required autocomplete="current-password">
+                  <button type="button" class="btn-toggle-eye" id="btn-toggle-password" title="Toggle password visibility">
+                    👁️
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" id="btn-submit-login" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 0.95rem; margin-top: 0.5rem;">
+                🔓 Authenticate &amp; Access Dashboard
+              </button>
+            </form>
+
+            <div style="margin-top: 1.5rem; text-align: center; font-size: 0.72rem; color: #64748B;">
+              🔒 Constant-time cryptographic comparison active &bull; Max 5 attempts / 15 min
             </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span style="font-size: 0.78rem; background: rgba(16, 185, 129, 0.15); color: #34D399; padding: 0.4rem 0.85rem; border-radius: 9999px; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.35);">
-              ✓ Fully Automated Webhook Engine: ACTIVE
-            </span>
-            <button id="btn-refresh-data" class="btn-secondary" style="font-size: 0.78rem; padding: 0.4rem 0.85rem;">
-              🔄 Refresh Roster
+        </div>
+      </div>
+
+      <!-- ==================== VIEW 2: UNLOCKED ADMIN COMMAND CENTER ==================== -->
+      <div id="admin-dashboard-view" style="display: none;">
+
+        <!-- Header row with Action Buttons -->
+        <div class="admin-header-row">
+          <div>
+            <span class="hero-teaser">Confidential &bull; Conveners &amp; Faculty Coordinators</span>
+            <h1 class="section-title" style="font-size: 2.2rem;">Fest Registrations &amp; Live Rosters</h1>
+            <p class="section-subtitle">Real-time team verification, cryptographic Cashfree webhook logs, and automated slot allocations.</p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button class="btn-secondary" id="btn-export-all" style="font-size: 0.88rem; padding: 0.65rem 1.25rem;">
+              📥 Export All Teams (CSV)
+            </button>
+            <button class="btn-primary" id="btn-export-filtered" style="font-size: 0.88rem; padding: 0.65rem 1.25rem;">
+              📥 Export Filtered (CSV)
             </button>
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; font-size: 0.82rem; color: var(--text-muted);">
-          <div style="background: rgba(18, 22, 34, 0.8); border: 1px solid var(--border-light); border-radius: 12px; padding: 0.85rem 1rem;">
-            <strong style="color: #F8FAFC; display: block; margin-bottom: 0.25rem;">Live Webhook Endpoint:</strong>
-            <code style="color: #38BDF8; font-family: 'JetBrains Mono', monospace;">/api/webhook/cashfree</code>
+        <!-- High-level Metric Cards (Centered) -->
+        <div class="admin-stats-grid">
+          <div class="stat-metric-card">
+            <div class="stat-metric-label">Confirmed Teams</div>
+            <div class="stat-metric-val" id="admin-total-teams">0</div>
+            <span style="font-size: 0.75rem; color: #34D399; background: rgba(16, 185, 129, 0.15); padding: 3px 8px; border-radius: 4px; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.3);">
+              Live Confirmed
+            </span>
           </div>
-          <div style="background: rgba(18, 22, 34, 0.8); border: 1px solid var(--border-light); border-radius: 12px; padding: 0.85rem 1rem;">
-            <strong style="color: #F8FAFC; display: block; margin-bottom: 0.25rem;">Cryptographic Security Layer:</strong>
-            <span style="color: #34D399;">HMAC-SHA256 (Timestamp + Raw Body)</span>
+
+          <div class="stat-metric-card">
+            <div class="stat-metric-label">Total Registered Students</div>
+            <div class="stat-metric-val" id="admin-total-students">0</div>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">3 participants compulsory / team</span>
           </div>
-          <div style="background: rgba(18, 22, 34, 0.8); border: 1px solid var(--border-light); border-radius: 12px; padding: 0.85rem 1rem;">
-            <strong style="color: #F8FAFC; display: block; margin-bottom: 0.25rem;">Slot Locking Mechanism:</strong>
-            <span style="color: #F1F5F9;">Immediate Atomic Database Lock on PAID</span>
+
+          <div class="stat-metric-card">
+            <div class="stat-metric-label">Aggregate Revenue Collected</div>
+            <div class="stat-metric-val" id="admin-total-revenue" style="color: #34D399;">₹0</div>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Snack passes aggregate</span>
           </div>
         </div>
-      </div>
 
-      <!-- Live Event Fill Monitor -->
-      <div style="margin-bottom: 2.5rem;">
-        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem; color: #FFFFFF;">Competition Capacities &amp; Remaining Slots (Live)</h3>
-        <div id="admin-slots-bars" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.25rem;">
-          <!-- Dynamically populated -->
+        <!-- High-Concurrency Overcapacity Banner (Visible only when race condition triggered) -->
+        <div id="admin-overcapacity-banner" class="overcapacity-banner" style="display: none;">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.4rem;">
+                <span style="font-size: 1.4rem;">⚠️</span>
+                <h3 style="font-size: 1.2rem; font-weight: 900; color: #F59E0B;">High-Concurrency Slot Alert: Action Required</h3>
+                <span id="overcapacity-count-badge" style="font-size: 0.75rem; background: rgba(245, 158, 11, 0.25); color: #FBBF24; padding: 2px 8px; border-radius: 9999px; font-weight: 800;">
+                  0 Teams Pending Reassignment / Refund
+                </span>
+              </div>
+              <p style="font-size: 0.85rem; color: #E2E8F0; line-height: 1.55; max-width: 820px;">
+                These teams completed their payment simultaneously when only 1 or 2 slots remained. The slot locking engine prevented overselling. Payments and UTRs are securely registered below. Please contact team leads via phone/WhatsApp to either reassign them to an open track or initiate an immediate 100% refund.
+              </p>
+            </div>
+            <button id="btn-refresh-overcapacity" class="btn-secondary" style="font-size: 0.78rem; padding: 0.4rem 0.85rem;">
+              🔄 Refresh List
+            </button>
+          </div>
+          <div id="overcapacity-teams-list" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.65rem;">
+            <!-- Dynamically populated -->
+          </div>
         </div>
-      </div>
 
-      <!-- Filter & Search Controls -->
-      <div class="admin-filter-bar">
-        <div style="display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;">
+        <!-- ==================== CASHFREE GATEWAY & WEBHOOK ENGINE STATUS ==================== -->
+        <div class="gateway-security-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #10B981, #06B6D4); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.2rem;">
+                ⚡
+              </div>
+              <div>
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: #FFFFFF;">Cashfree Payments Production Gateway</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Cryptographic HMAC-SHA256 signature verification &bull; Slots locked only upon confirmed payment</p>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 0.78rem; background: rgba(16, 185, 129, 0.15); color: #34D399; padding: 0.4rem 0.85rem; border-radius: 9999px; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.35);">
+                ✓ Automated Webhook: ACTIVE
+              </span>
+              <button id="btn-refresh-data" class="btn-secondary" style="font-size: 0.78rem; padding: 0.4rem 0.85rem;">
+                🔄 Refresh Roster
+              </button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; font-size: 0.82rem; color: var(--text-muted);">
+            <div style="background: rgba(18, 22, 34, 0.8); border: 1px solid var(--border-light); border-radius: 12px; padding: 0.85rem 1rem;">
+              <strong style="color: #F8FAFC; display: block; margin-bottom: 0.25rem;">Live Webhook Endpoint:</strong>
+              <code style="color: #38BDF8; font-family: 'JetBrains Mono', monospace;">/api/webhook/cashfree</code>
+            </div>
+            <div style="background: rgba(18, 22, 34, 0.8); border: 1px solid var(--border-light); border-radius: 12px; padding: 0.85rem 1rem;">
+              <strong style="color: #F8FAFC; display: block; margin-bottom: 0.25rem;">Cryptographic Layer:</strong>
+              <span style="color: #34D399;">HMAC-SHA256 (Timestamp + Raw Body)</span>
+            </div>
+            <div style="background: rgba(18, 22, 34, 0.8); border: 1px solid var(--border-light); border-radius: 12px; padding: 0.85rem 1rem;">
+              <strong style="color: #F8FAFC; display: block; margin-bottom: 0.25rem;">Slot Concurrency Guard:</strong>
+              <span style="color: #F1F5F9;">Atomic Mutex Queue &bull; No Overselling</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Event Fill Monitor -->
+        <div style="margin-bottom: 2.5rem;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem; color: #FFFFFF;">Competition Capacities &amp; Remaining Slots (Live)</h3>
+          <div id="admin-slots-bars" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.25rem;">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="admin-filter-bar">
+          <div style="display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;">
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 800; color: #94A3B8; display: block; margin-bottom: 0.35rem; text-transform: uppercase;">FILTER BY COMPETITION</label>
+              <select id="admin-comp-filter" class="form-select" style="min-width: 260px; padding: 0.55rem 0.85rem; font-size: 0.88rem;">
+                <option value="all">All Competitions (Combined)</option>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 800; color: #94A3B8; display: block; margin-bottom: 0.35rem; text-transform: uppercase;">SEARCH TEAM / USN / PHONE / NAME</label>
+              <input type="text" id="admin-search-input" class="admin-search-input" placeholder="Search team name, student, or USN...">
+            </div>
+          </div>
+
           <div>
-            <label style="font-size: 0.75rem; font-weight: 800; color: #94A3B8; display: block; margin-bottom: 0.35rem; text-transform: uppercase;">FILTER BY COMPETITION</label>
-            <select id="admin-comp-filter" class="form-select" style="min-width: 260px; padding: 0.55rem 0.85rem; font-size: 0.88rem;">
-              <option value="all">All Competitions (Combined)</option>
+            <span id="admin-filtered-count" style="font-size: 0.85rem; font-weight: 800; color: #38BDF8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.4rem 1rem; border-radius: var(--radius-pill);">
+              0 teams
+            </span>
+          </div>
+        </div>
+
+        <!-- Master Registrations Table -->
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Pass ID &amp; Time</th>
+                <th>Team Name</th>
+                <th>Competitions</th>
+                <th>Members (USN, Sem, Phone, Pack)</th>
+                <th>Amount Paid</th>
+                <th>Cashfree ID &amp; UTR</th>
+                <th>Verification Mode</th>
+              </tr>
+            </thead>
+            <tbody id="admin-table-body">
               <!-- Populated dynamically -->
-            </select>
-          </div>
-          
-          <div>
-            <label style="font-size: 0.75rem; font-weight: 800; color: #94A3B8; display: block; margin-bottom: 0.35rem; text-transform: uppercase;">SEARCH TEAM / USN / PHONE / NAME</label>
-            <input type="text" id="admin-search-input" class="admin-search-input" placeholder="Search team name, student, or USN...">
-          </div>
+            </tbody>
+          </table>
         </div>
 
-        <div>
-          <span id="admin-filtered-count" style="font-size: 0.85rem; font-weight: 800; color: #38BDF8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.4rem 1rem; border-radius: var(--radius-pill);">
-            0 teams
-          </span>
-        </div>
-      </div>
-
-      <!-- Master Registrations Table -->
-      <div class="admin-table-wrapper">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Pass ID &amp; Time</th>
-              <th>Team Name</th>
-              <th>Competitions</th>
-              <th>Members (USN, Sem, Phone, Pack)</th>
-              <th>Amount Paid</th>
-              <th>Cashfree ID &amp; UTR</th>
-              <th>Verification Mode</th>
-            </tr>
-          </thead>
-          <tbody id="admin-table-body">
-            <!-- Populated dynamically -->
-          </tbody>
-        </table>
       </div>
 
     </div>
@@ -352,18 +580,159 @@
 
   <script>
     const adminState = {
+      token: null,
+      username: null,
       events: [],
       registrations: [],
+      overCapacityTeams: [],
       filter: 'all',
       search: ''
     };
 
     document.addEventListener('DOMContentLoaded', () => {
-      fetchAdminData();
-      initAdminSSE();
+      initAuthSession();
+      setupAuthListeners();
       setupAdminListeners();
     });
 
+    // ==================== AUTHENTICATION MANAGEMENT ====================
+    async function initAuthSession() {
+      const savedToken = sessionStorage.getItem('tgf_admin_token');
+      const savedUser = sessionStorage.getItem('tgf_admin_user');
+
+      if (!savedToken) {
+        showLoginView();
+        return;
+      }
+
+      // Verify active session with backend
+      try {
+        const res = await fetch('/api/admin/verify-session', {
+          headers: { 'Authorization': `Bearer ${savedToken}` }
+        });
+        const data = await res.json();
+
+        if (data.success && data.authenticated) {
+          adminState.token = savedToken;
+          adminState.username = data.username || savedUser || 'v24j063012';
+          unlockDashboard();
+        } else {
+          sessionStorage.removeItem('tgf_admin_token');
+          sessionStorage.removeItem('tgf_admin_user');
+          showLoginView();
+        }
+      } catch (err) {
+        // If network issue, show login
+        showLoginView();
+      }
+    }
+
+    function showLoginView() {
+      document.getElementById('admin-login-view').style.display = 'flex';
+      document.getElementById('admin-dashboard-view').style.display = 'none';
+      document.getElementById('admin-user-pill').style.display = 'none';
+      document.getElementById('btn-admin-logout').style.display = 'none';
+      document.getElementById('admin-sse-pill').style.display = 'none';
+    }
+
+    function unlockDashboard() {
+      document.getElementById('admin-login-view').style.display = 'none';
+      document.getElementById('admin-dashboard-view').style.display = 'block';
+      document.getElementById('admin-user-pill').style.display = 'inline-block';
+      document.getElementById('admin-logged-user').innerText = adminState.username || 'v24j063012';
+      document.getElementById('btn-admin-logout').style.display = 'inline-block';
+      document.getElementById('admin-sse-pill').style.display = 'inline-flex';
+
+      fetchAdminData();
+      initAdminSSE();
+    }
+
+    function setupAuthListeners() {
+      const form = document.getElementById('admin-login-form');
+      const btnToggle = document.getElementById('btn-toggle-password');
+      const passwordInput = document.getElementById('admin-password');
+      const errorBox = document.getElementById('admin-login-error');
+      const btnLogout = document.getElementById('btn-admin-logout');
+
+      // Toggle show/hide password
+      if (btnToggle && passwordInput) {
+        btnToggle.addEventListener('click', () => {
+          const isPassword = passwordInput.type === 'password';
+          passwordInput.type = isPassword ? 'text' : 'password';
+          btnToggle.innerText = isPassword ? '🙈' : '👁️';
+        });
+      }
+
+      // Handle Login Submission
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          errorBox.style.display = 'none';
+          errorBox.innerText = '';
+
+          const username = document.getElementById('admin-username').value.trim();
+          const password = passwordInput.value.trim();
+          const btnSubmit = document.getElementById('btn-submit-login');
+
+          btnSubmit.disabled = true;
+          btnSubmit.innerText = 'Verifying Credentials... ⏳';
+
+          try {
+            const res = await fetch('/api/admin/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+
+            if (data.success && data.token) {
+              adminState.token = data.token;
+              adminState.username = data.username || username;
+              sessionStorage.setItem('tgf_admin_token', data.token);
+              sessionStorage.setItem('tgf_admin_user', adminState.username);
+              unlockDashboard();
+            } else {
+              errorBox.innerText = data.message || 'Invalid administrator credentials. Access denied.';
+              errorBox.style.display = 'block';
+              passwordInput.value = '';
+              passwordInput.focus();
+            }
+          } catch (err) {
+            errorBox.innerText = 'Unable to connect to security authentication engine. Please try again.';
+            errorBox.style.display = 'block';
+          } finally {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = '🔓 Authenticate & Access Dashboard';
+          }
+        });
+      }
+
+      // Handle Logout
+      if (btnLogout) {
+        btnLogout.addEventListener('click', async () => {
+          if (adminState.token) {
+            try {
+              await fetch('/api/admin/logout', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${adminState.token}`
+                }
+              });
+            } catch (e) {}
+          }
+
+          adminState.token = null;
+          adminState.username = null;
+          sessionStorage.removeItem('tgf_admin_token');
+          sessionStorage.removeItem('tgf_admin_user');
+          showLoginView();
+        });
+      }
+    }
+
+    // ==================== REAL-TIME SSE & DATA POLLING ====================
     function initAdminSSE() {
       if (!window.EventSource) return;
       const evtSource = new EventSource('/api/events/stream');
@@ -375,7 +744,7 @@
             adminState.events = data.events;
             renderAdminSlotBars(data.events);
           }
-          if (data.type === 'PAYMENT_CONFIRMED' || data.type === 'SLOTS_UPDATE') {
+          if (data.type === 'PAYMENT_CONFIRMED' || data.type === 'SLOTS_UPDATE' || data.type === 'PAYMENT_OVER_CAPACITY') {
             fetchAdminData();
           }
         } catch (err) {
@@ -385,17 +754,30 @@
     }
 
     async function fetchAdminData() {
+      if (!adminState.token) return;
+
       try {
-        const res = await fetch('/api/admin/registrations');
+        const res = await fetch('/api/admin/registrations', {
+          headers: { 'Authorization': `Bearer ${adminState.token}` }
+        });
+
+        if (res.status === 401) {
+          sessionStorage.removeItem('tgf_admin_token');
+          showLoginView();
+          return;
+        }
+
         const data = await res.json();
         if (data.success) {
           adminState.registrations = data.registrations || [];
+          adminState.overCapacityTeams = data.overCapacityTeams || [];
           adminState.events = data.events || [];
 
           document.getElementById('admin-total-teams').innerText = data.totalTeams;
           document.getElementById('admin-total-students').innerText = data.totalStudents;
-          document.getElementById('admin-total-revenue').innerText = `₹${data.totalRevenue.toLocaleString('en-IN')}`;
+          document.getElementById('admin-total-revenue').innerText = `₹${(data.totalRevenue || 0).toLocaleString('en-IN')}`;
 
+          renderOverCapacityBanner(data.overCapacityTeams || []);
           populateCompFilterOptions();
           renderAdminSlotBars(adminState.events);
           renderRegistrationsTable();
@@ -403,6 +785,47 @@
       } catch (err) {
         console.error('Failed to fetch admin data:', err);
       }
+    }
+
+    function renderOverCapacityBanner(overCapacityTeams) {
+      const banner = document.getElementById('admin-overcapacity-banner');
+      const badge = document.getElementById('overcapacity-count-badge');
+      const list = document.getElementById('overcapacity-teams-list');
+      if (!banner || !list) return;
+
+      if (!overCapacityTeams || overCapacityTeams.length === 0) {
+        banner.style.display = 'none';
+        return;
+      }
+
+      banner.style.display = 'block';
+      if (badge) badge.innerText = `${overCapacityTeams.length} Team(s) Pending Review / Refund`;
+
+      list.innerHTML = overCapacityTeams.map(t => {
+        const lead = t.members?.[0] || {};
+        const eventsFull = (t.overCapacityEvents || []).join(', ') || 'Selected Track';
+        const dateStr = new Date(t.registeredAt || t.createdAt).toLocaleTimeString('en-IN');
+
+        return `
+          <div style="background: rgba(14, 18, 28, 0.85); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 12px; padding: 0.85rem 1.15rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <strong style="color: #FFFFFF; font-size: 0.95rem;">${t.teamName}</strong> 
+              <span style="color: #FBBF24; font-size: 0.78rem; font-weight: 700;">(Paid ₹${t.totalAmount} &bull; UTR: ${t.utrNumber || 'Recorded'})</span>
+              <div style="font-size: 0.78rem; color: #E2E8F0; margin-top: 2px;">
+                Conflict: Full track <strong>${eventsFull}</strong> &bull; Lead: <strong>${lead.name}</strong> (${lead.usn}, Ph: <a href="tel:${lead.phone}" style="color: #38BDF8; font-weight: 700;">${lead.phone}</a>)
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <a href="https://wa.me/91${(lead.phone || '').replace(/\D/g, '')}" target="_blank" class="btn-primary" style="font-size: 0.75rem; padding: 0.35rem 0.75rem; background: #25D366; border-color: #25D366; text-decoration: none;">
+                💬 WhatsApp Lead
+              </a>
+              <a href="tel:${lead.phone}" class="btn-secondary" style="font-size: 0.75rem; padding: 0.35rem 0.75rem; text-decoration: none;">
+                📞 Call
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function populateCompFilterOptions() {
@@ -495,7 +918,7 @@
         const membersList = (r.members || []).map((m, idx) => `
           <div style="font-size: 0.8rem; margin-bottom: 0.35rem;">
             <strong style="color: #FFFFFF;">M${idx + 1}: ${m.name}</strong> 
-            <span style="color: var(--text-muted); font-size: 0.75rem;">(${m.usn}, ${m.semester}, Ph: ${m.phone})</span> 
+            <span style="color: var(--text-muted); font-size: 0.75rem;">(${m.usn}, ${m.semester}, Ph: <a href="tel:${m.phone}" style="color:#38BDF8;">${m.phone}</a>)</span> 
             <span style="color: #34D399; font-weight: 700; font-size: 0.72rem;">[${m.snackPack === 'pack1' ? 'Pack 1' : 'Pack 2'}]</span>
           </div>
         `).join('');
@@ -538,6 +961,7 @@
       const btnExportAll = document.getElementById('btn-export-all');
       const btnExportFiltered = document.getElementById('btn-export-filtered');
       const btnRefresh = document.getElementById('btn-refresh-data');
+      const btnRefreshOver = document.getElementById('btn-refresh-overcapacity');
 
       if (compFilter) {
         compFilter.addEventListener('change', (e) => {
@@ -555,18 +979,26 @@
 
       if (btnExportAll) {
         btnExportAll.addEventListener('click', () => {
-          window.location.href = '/api/admin/export';
+          if (!adminState.token) return;
+          window.location.href = `/api/admin/export?token=${encodeURIComponent(adminState.token)}`;
         });
       }
 
       if (btnExportFiltered) {
         btnExportFiltered.addEventListener('click', () => {
-          window.location.href = `/api/admin/export?compId=${adminState.filter}`;
+          if (!adminState.token) return;
+          window.location.href = `/api/admin/export?compId=${encodeURIComponent(adminState.filter)}&token=${encodeURIComponent(adminState.token)}`;
         });
       }
 
       if (btnRefresh) {
         btnRefresh.addEventListener('click', () => {
+          fetchAdminData();
+        });
+      }
+
+      if (btnRefreshOver) {
+        btnRefreshOver.addEventListener('click', () => {
           fetchAdminData();
         });
       }
