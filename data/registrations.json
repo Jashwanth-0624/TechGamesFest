@@ -1,1 +1,53 @@
-[]
+[
+  {
+    "id": "TGF-2026-2389",
+    "orderId": "TGF_1793632044580_5513",
+    "teamName": "Synergy",
+    "selectedCompetitions": [
+      "mentimeter-quiz",
+      "pitch-perfect"
+    ],
+    "members": [
+      {
+        "index": 1,
+        "name": "Jashwanth R",
+        "usn": "ENG24DS0018",
+        "semester": "3rd Sem",
+        "phone": "8310817516",
+        "email": "rjashwanth562@gmail.com",
+        "snackPack": "pack1",
+        "snackPrice": 135
+      },
+      {
+        "index": 2,
+        "name": "Vibha K",
+        "usn": "ENG24DS0030",
+        "semester": "3rd Sem",
+        "phone": "9876543210",
+        "email": "vibha@dsu.edu.in",
+        "snackPack": "pack1",
+        "snackPrice": 135
+      },
+      {
+        "index": 3,
+        "name": "Maduraa BS",
+        "usn": "ENG24DS0012",
+        "semester": "3rd Sem",
+        "phone": "8904418566",
+        "email": "maduraa@dsu.edu.in",
+        "snackPack": "pack1",
+        "snackPrice": 135
+      }
+    ],
+    "totalAmount": 405,
+    "currency": "INR",
+    "paymentSessionId": "session_6wi6_6PJ53fyq4SoG5-m3E9Yvyto_aen9a3cmOAogVEnnBLalHx_yAxjKVNiuZAhDx5muoDbFiTtVP1uYiskIgXVdPnUgt8a4tEKJFbSsGCgkGitNtHdO9TVQJLq",
+    "paymentStatus": "SUCCESS",
+    "paymentGateway": "Cashfree Payments",
+    "paymentId": "6900872931",
+    "utrNumber": "502668237645",
+    "verifiedVia": "Cashfree Production PG (Verified)",
+    "createdAt": "2026-11-02T20:37:25+05:30",
+    "registeredAt": "2026-11-02T20:39:22+05:30"
+  }
+]

@@ -2853,91 +2853,117 @@ h1, h2, h3, h4, .brand-font {
   }
 }
 
-/* ==================== PRINTABLE RECEIPT STYLES ==================== */
+/* ==================== WHATSAPP GROUP INVITE STYLES ==================== */
+.whatsapp-group-invite-card {
+  background: linear-gradient(135deg, rgba(37, 211, 102, 0.12) 0%, rgba(18, 22, 34, 0.95) 100%);
+  border: 1.5px solid rgba(37, 211, 102, 0.45);
+  border-radius: 20px;
+  padding: 1.5rem 1.75rem;
+  max-width: 650px;
+  margin: 0 auto 2rem auto;
+  box-shadow: 0 0 35px rgba(37, 211, 102, 0.18);
+  text-align: left;
+}
+.btn-whatsapp-join {
+  background: #25D366;
+  color: #FFFFFF !important;
+  font-weight: 800;
+  padding: 0.75rem 1.35rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 20px rgba(37, 211, 102, 0.35);
+}
+.btn-whatsapp-join:hover {
+  background: #1EBE5D;
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(37, 211, 102, 0.5);
+}
+
+/* ==================== PRINTABLE RECEIPT STYLES (ZERO INITIAL BLANK PAGE) ==================== */
 .print-receipt-header {
   display: none;
 }
 
 @media print {
-  body {
-    background: #FFFFFF !important;
-    color: #000000 !important;
-    font-size: 12pt;
-    margin: 0;
-    padding: 0;
+  @page {
+    size: A4 portrait;
+    margin: 12mm 15mm;
   }
 
-  /* Hide entire web UI chrome during printing */
+  html, body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    font-size: 11pt !important;
+  }
+
+  /* Hide entire page DOM by default to prevent leading blank pages */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Make ONLY the printable pass card visible and anchor it at top-left */
+  #printable-pass-card,
+  #printable-pass-card * {
+    visibility: visible !important;
+  }
+
+  #printable-pass-card {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 18px 24px !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+  }
+
+  .print-receipt-header {
+    display: block !important;
+    visibility: visible !important;
+    text-align: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 2px solid #000000;
+  }
+
+  .whatsapp-group-invite-card,
   .site-header,
   .site-footer,
   .hero-container,
-  .page-view:not(#view-register),
   .reg-stepper-bar,
-  #reg-step-1,
-  #reg-step-2,
-  #reg-step-3,
-  #reg-overcapacity-card,
-  #reg-cancelled-card,
   #btn-print-pass,
   #btn-register-another,
   .bg-blob,
   .modal-overlay,
   .rules-day-nav {
     display: none !important;
-  }
-
-  .main-wrapper {
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: 100% !important;
-  }
-
-  .reg-container {
-    padding: 0 !important;
-    max-width: 100% !important;
-  }
-
-  #reg-success-card {
-    display: block !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  #reg-success-card > div:first-child {
-    display: none !important;
-  }
-
-  .print-receipt-header {
-    display: block !important;
-    text-align: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid #000000;
-  }
-
-  .pass-ticket-card {
-    background: #FFFFFF !important;
-    border: 2px solid #000000 !important;
-    border-radius: 8px !important;
-    box-shadow: none !important;
-    padding: 1.5rem !important;
-    max-width: 100% !important;
-    color: #000000 !important;
-    page-break-inside: avoid;
+    visibility: hidden !important;
   }
 
   .pass-header {
     border-bottom: 1px solid #CCCCCC !important;
-    padding-bottom: 0.75rem !important;
-    margin-bottom: 1rem !important;
+    padding-bottom: 0.65rem !important;
+    margin-bottom: 0.85rem !important;
   }
 
   .pass-id-tag {
     color: #000000 !important;
-    font-size: 1.4rem !important;
+    font-size: 1.35rem !important;
     font-weight: 900 !important;
   }
 
@@ -2951,22 +2977,22 @@ h1, h2, h3, h4, .brand-font {
   .pass-data-grid {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 1rem !important;
+    gap: 0.85rem !important;
     border-bottom: 1px solid #CCCCCC !important;
-    padding-bottom: 1rem !important;
-    margin-bottom: 1rem !important;
+    padding-bottom: 0.85rem !important;
+    margin-bottom: 0.85rem !important;
   }
 
   .pass-data-item label {
-    color: #555555 !important;
-    font-size: 0.75rem !important;
+    color: #444444 !important;
+    font-size: 0.72rem !important;
     text-transform: uppercase !important;
     font-weight: 700 !important;
   }
 
   .pass-data-item div {
     color: #000000 !important;
-    font-size: 1.1rem !important;
+    font-size: 1.05rem !important;
     font-weight: 800 !important;
   }
 
@@ -2977,17 +3003,17 @@ h1, h2, h3, h4, .brand-font {
   #success-events-list {
     color: #000000 !important;
     font-weight: 800 !important;
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
   }
 
   #success-members-list {
-    color: #222222 !important;
-    font-size: 0.95rem !important;
-    line-height: 1.6 !important;
+    color: #111111 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
   }
 
   #success-members-list li {
-    margin-bottom: 0.35rem !important;
+    margin-bottom: 0.3rem !important;
   }
 
   #success-members-list strong {
@@ -2997,7 +3023,7 @@ h1, h2, h3, h4, .brand-font {
   .pass-ticket-card > div:last-child {
     border-top: 1px solid #CCCCCC !important;
     color: #333333 !important;
-    padding-top: 0.75rem !important;
+    padding-top: 0.65rem !important;
   }
 
   #success-pay-id {

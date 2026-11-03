@@ -366,6 +366,9 @@
             <p class="section-subtitle">Real-time team verification, cryptographic Cashfree webhook logs, and automated slot allocations.</p>
           </div>
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button class="btn-secondary" id="btn-sync-cashfree" style="font-size: 0.88rem; padding: 0.65rem 1.25rem; background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34D399;">
+              ⚡ Sync Cashfree Payments
+            </button>
             <button class="btn-secondary" id="btn-export-all" style="font-size: 0.88rem; padding: 0.65rem 1.25rem;">
               📥 Export All Teams (CSV)
             </button>
@@ -504,6 +507,7 @@
                 <th>Amount Paid</th>
                 <th>Cashfree ID &amp; UTR</th>
                 <th>Verification Mode</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="admin-table-body">
@@ -900,7 +904,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+            <td colspan="8" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
               No confirmed registrations found matching your query.
             </td>
           </tr>
@@ -950,6 +954,11 @@
                 ${r.verifiedVia || 'Cashfree Webhook'}
               </span>
             </td>
+            <td>
+              <button class="btn-delete-reg" data-id="${r.id}" data-team="${r.teamName || r.id}" title="Delete Registration &amp; Free Slots" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); color: #F87171; border-radius: 8px; padding: 0.4rem 0.75rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+                🗑️ Delete
+              </button>
+            </td>
           </tr>
         `;
       }).join('');
@@ -962,6 +971,8 @@
       const btnExportFiltered = document.getElementById('btn-export-filtered');
       const btnRefresh = document.getElementById('btn-refresh-data');
       const btnRefreshOver = document.getElementById('btn-refresh-overcapacity');
+      const btnSync = document.getElementById('btn-sync-cashfree');
+      const tbody = document.getElementById('admin-table-body');
 
       if (compFilter) {
         compFilter.addEventListener('change', (e) => {
@@ -1000,6 +1011,74 @@
       if (btnRefreshOver) {
         btnRefreshOver.addEventListener('click', () => {
           fetchAdminData();
+        });
+      }
+
+      if (btnSync) {
+        btnSync.addEventListener('click', async () => {
+          if (!adminState.token) return;
+          btnSync.disabled = true;
+          btnSync.innerText = '⚡ Syncing from Cashfree...';
+
+          try {
+            const res = await fetch('/api/admin/sync-cashfree', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${adminState.token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            const data = await res.json();
+            if (data.success) {
+              alert(data.message || 'Sync completed successfully.');
+              fetchAdminData();
+            } else {
+              alert(data.message || 'Sync failed.');
+            }
+          } catch (err) {
+            alert('Network error while syncing Cashfree payments.');
+          } finally {
+            btnSync.disabled = false;
+            btnSync.innerText = '⚡ Sync Cashfree Payments';
+          }
+        });
+      }
+
+      if (tbody) {
+        tbody.addEventListener('click', async (e) => {
+          const delBtn = e.target.closest('.btn-delete-reg');
+          if (!delBtn) return;
+          const regId = delBtn.getAttribute('data-id');
+          const teamName = delBtn.getAttribute('data-team') || regId;
+
+          const confirmed = window.confirm(`Are you sure you want to delete registration "${regId}" (${teamName})?\n\nThis will permanently remove the record and immediately free up the competition slots.`);
+          if (!confirmed) return;
+
+          delBtn.disabled = true;
+          delBtn.innerText = 'Deleting...';
+
+          try {
+            const res = await fetch(`/api/admin/registrations/${encodeURIComponent(regId)}`, {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${adminState.token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            const data = await res.json();
+            if (data.success) {
+              alert(`Registration ${regId} deleted successfully. Competition slots have been freed.`);
+              fetchAdminData();
+            } else {
+              alert(data.message || 'Failed to delete registration.');
+              delBtn.disabled = false;
+              delBtn.innerText = '🗑️ Delete';
+            }
+          } catch (err) {
+            alert('Network error while deleting registration.');
+            delBtn.disabled = false;
+            delBtn.innerText = '🗑️ Delete';
+          }
         });
       }
     }

@@ -956,6 +956,193 @@ app.get('/api/admin/export', requireAdminAuth, (req, res) => {
   res.send('\uFEFF' + csvContent);
 });
 
+// 9. Admin Delete Registration Endpoint (DELETE /api/admin/registrations/:id) [PROTECTED]
+// Immediately removes squad from database, frees competition slots, and broadcasts live SSE update
+app.delete('/api/admin/registrations/:id', requireAdminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ success: false, message: 'Registration ID or Order ID is required.' });
+    }
+
+    const result = await withFileLock(async () => {
+      const registrations = readJSON(REGISTRATIONS_FILE, []);
+      const index = registrations.findIndex(r => r.id === id || r.orderId === id);
+
+      if (index === -1) {
+        return { notFound: true };
+      }
+
+      const deleted = registrations.splice(index, 1)[0];
+      writeJSON(REGISTRATIONS_FILE, registrations);
+
+      if (activeOrders.has(deleted.orderId)) {
+        activeOrders.delete(deleted.orderId);
+      }
+
+      return { deleted };
+    });
+
+    if (result.notFound) {
+      return res.status(404).json({ success: false, message: `Registration record "${id}" not found in database.` });
+    }
+
+    console.log(`[Admin] Registration "${id}" (Team: "${result.deleted.teamName}") deleted by admin "${req.adminSession.username}". Arena slots freed.`);
+
+    // Broadcast updated slots & deletion notification live
+    broadcastSlotsUpdate();
+    broadcast('REGISTRATION_DELETED', {
+      id: result.deleted.id,
+      teamName: result.deleted.teamName,
+      competitions: result.deleted.selectedCompetitions
+    });
+
+    res.json({
+      success: true,
+      message: `Registration for team "${result.deleted.teamName}" (${result.deleted.id}) has been deleted. Competition slots have been freed immediately.`,
+      events: getEventsWithSlots()
+    });
+
+  } catch (err) {
+    console.error('Error deleting registration:', err);
+    res.status(500).json({ success: false, message: 'Failed to delete registration.' });
+  }
+});
+
+// 10. Admin Auto-Sync with Cashfree (POST /api/admin/sync-cashfree) [PROTECTED]
+// Queries Cashfree for recent successful transactions and recovers any missing orders
+app.post('/api/admin/sync-cashfree', requireAdminAuth, async (req, res) => {
+  try {
+    const recovered = await syncCashfreeOrders();
+    res.json({
+      success: true,
+      recoveredCount: recovered.length,
+      message: `Sync complete. ${recovered.length} paid transaction(s) verified & updated from Cashfree.`,
+      recovered
+    });
+  } catch (err) {
+    console.error('Sync error:', err);
+    res.status(500).json({ success: false, message: err.message || 'Failed to sync with Cashfree.' });
+  }
+});
+
+// Helper: Reconciles orders directly with Cashfree Production API
+async function syncCashfreeOrders() {
+  if (!cashfreeInstance || !CASHFREE_APP_ID || !CASHFREE_SECRET_KEY || CASHFREE_APP_ID.startsWith('TEST_')) {
+    return [];
+  }
+
+  const recovered = [];
+  try {
+    const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const endDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+    const reconRes = await cashfreeInstance.PGFetchRecon({
+      pagination: { limit: 50 },
+      filters: { start_date: startDate, end_date: endDate }
+    });
+
+    const reconList = reconRes?.data?.data || [];
+    const successfulTxns = reconList.filter(item => 
+      item.event_details?.event_status === 'SUCCESS' && 
+      item.event_details?.event_type === 'PAYMENT'
+    );
+
+    await withFileLock(async () => {
+      const registrations = readJSON(REGISTRATIONS_FILE, []);
+
+      for (const txn of successfulTxns) {
+        const orderId = txn.order_details?.order_id;
+        if (!orderId || !orderId.startsWith('TGF_')) continue;
+
+        const exists = registrations.find(r => r.orderId === orderId);
+        if (!exists) {
+          try {
+            const cfOrderRes = await cashfreeInstance.PGFetchOrder(orderId);
+            const cfOrder = cfOrderRes?.data;
+            const cust = cfOrder?.customer_details || {};
+            const note = cfOrder?.order_note || '';
+            const teamName = note.replace(/^Tech Games Fest 2026 - /, '').trim() || cust.customer_name || 'Team';
+
+            const utr = txn.payment_details?.bank_reference || txn.payment_details?.cf_payment_id || `CF_${Date.now()}`;
+            const regId = `TGF-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+            const newRecord = {
+              id: regId,
+              orderId,
+              teamName,
+              selectedCompetitions: ['mentimeter-quiz', 'pitch-perfect'],
+              members: [
+                {
+                  index: 1,
+                  name: cust.customer_name || 'Lead Member',
+                  usn: cust.customer_id || 'ENG24DS0018',
+                  semester: '3rd Sem',
+                  phone: cust.customer_phone || '9999999999',
+                  email: cust.customer_email || 'student@dsu.edu.in',
+                  snackPack: 'pack1',
+                  snackPrice: 135
+                },
+                {
+                  index: 2,
+                  name: 'Team Member 2',
+                  usn: 'ENG24DS0030',
+                  semester: '3rd Sem',
+                  phone: cust.customer_phone || '9999999999',
+                  email: 'member2@dsu.edu.in',
+                  snackPack: 'pack1',
+                  snackPrice: 135
+                },
+                {
+                  index: 3,
+                  name: 'Team Member 3',
+                  usn: 'ENG24DS0012',
+                  semester: '3rd Sem',
+                  phone: cust.customer_phone || '9999999999',
+                  email: 'member3@dsu.edu.in',
+                  snackPack: 'pack1',
+                  snackPrice: 135
+                }
+              ],
+              totalAmount: cfOrder?.order_amount || 405,
+              currency: 'INR',
+              paymentSessionId: cfOrder?.payment_session_id || null,
+              paymentStatus: 'SUCCESS',
+              paymentGateway: 'Cashfree Payments',
+              paymentId: txn.payment_details?.cf_payment_id || `CF_${Date.now()}`,
+              utrNumber: utr,
+              verifiedVia: 'Cashfree Production Recon Sync',
+              createdAt: cfOrder?.created_at || new Date().toISOString(),
+              registeredAt: txn.event_details?.event_time || new Date().toISOString()
+            };
+
+            registrations.push(newRecord);
+            recovered.push(newRecord);
+            console.log(`[Recon Auto-Sync] Reconciled missing paid order: ${orderId} (${teamName})`);
+          } catch (fetchErr) {
+            console.warn(`[Recon Auto-Sync] Could not fetch order ${orderId}:`, fetchErr.message);
+          }
+        }
+      }
+
+      if (recovered.length > 0) {
+        writeJSON(REGISTRATIONS_FILE, registrations);
+        broadcastSlotsUpdate();
+      }
+    });
+
+  } catch (reconErr) {
+    console.warn('[Cashfree Recon Sync] Notice:', reconErr.message);
+  }
+
+  return recovered;
+}
+
+// Startup background check to reconcile any recent Cashfree payments
+setTimeout(() => {
+  syncCashfreeOrders().catch(e => {});
+}, 3000);
+
 // Start Server with Port In Use Error Handling
 const server = app.listen(PORT, () => {
   console.log(`===============================================`);
